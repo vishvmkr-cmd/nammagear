@@ -16,40 +16,28 @@ export const useTheme = () => useContext(ThemeContext);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('light');
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    try {
-      const saved = localStorage.getItem('ng-theme');
-      if (saved === 'light' || saved === 'dark') {
-        setTheme(saved);
-        document.documentElement.setAttribute('data-theme', saved);
-      } else {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const initialTheme = prefersDark ? 'dark' : 'light';
-        setTheme(initialTheme);
-        document.documentElement.setAttribute('data-theme', initialTheme);
-      }
-    } catch (e) {
-      document.documentElement.setAttribute('data-theme', 'light');
+    const saved = localStorage.getItem('ng-theme');
+    let initialTheme: Theme = 'light';
+    
+    if (saved === 'light' || saved === 'dark') {
+      initialTheme = saved;
+    } else {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      initialTheme = prefersDark ? 'dark' : 'light';
     }
+    
+    setTheme(initialTheme);
+    document.documentElement.setAttribute('data-theme', initialTheme);
   }, []);
 
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
     document.documentElement.setAttribute('data-theme', next);
-    try {
-      localStorage.setItem('ng-theme', next);
-    } catch (e) {
-      // ignore
-    }
+    localStorage.setItem('ng-theme', next);
   };
-
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>

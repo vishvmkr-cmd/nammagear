@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 NammaGear Quick Start Script"
+echo "🚀 Student Gear Shop Quick Start Script"
 echo "================================"
 echo ""
 
@@ -44,14 +44,14 @@ fi
 
 # Create database
 echo -e "${YELLOW}🗄️  Creating database...${NC}"
-createdb nammagear 2>/dev/null || echo "Database 'nammagear' already exists"
+createdb student-gear-shop 2>/dev/null || echo "Database 'student-gear-shop' already exists"
 
 # Update DATABASE_URL in .env if needed
 if grep -q "localhost:5432" apps/api/.env; then
     echo -e "${GREEN}✓ Database URL already configured${NC}"
 else
     echo -e "${YELLOW}📝 Updating DATABASE_URL in apps/api/.env...${NC}"
-    sed -i '' 's|DATABASE_URL=.*|DATABASE_URL="postgresql://$(whoami)@localhost:5432/nammagear"|' apps/api/.env
+    sed -i '' 's|DATABASE_URL=.*|DATABASE_URL="postgresql://$(whoami)@localhost:5432/student-gear-shop"|' apps/api/.env
 fi
 
 # Install dependencies

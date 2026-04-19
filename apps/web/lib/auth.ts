@@ -1,13 +1,31 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { API_URL } from './api-url';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+async function readAuthError(res: Response): Promise<string> {
+  try {
+    const body = await res.json();
+    if (body?.error === 'Validation failed' && Array.isArray(body.details)) {
+      const first = body.details[0];
+      if (first?.path?.length && first?.message) {
+        return `${String(first.path[0])}: ${first.message}`;
+      }
+      return first?.message || body.error;
+    }
+    if (typeof body?.error === 'string') return body.error;
+    if (typeof body?.message === 'string') return body.message;
+  } catch {
+    /* non-JSON body */
+  }
+  return `Request failed (${res.status})`;
+}
 
 export interface User {
   id: string;
   email: string;
   name: string;
+  role: 'USER' | 'ADMIN';
   pincode: string;
   area: string;
   phone?: string;
@@ -47,23 +65,30 @@ export function useSignup() {
       password: string;
       name: string;
       pincode: string;
-      phone?: string;
+      phone: string;
       college?: string;
     }) => {
+      const payload: Record<string, string> = {
+        email: data.email.trim().toLowerCase(),
+        password: data.password,
+        name: data.name.trim(),
+        pincode: data.pincode.trim(),
+        phone: data.phone.replace(/\D/g, ''),
+      };
+      const c = data.college?.trim();
+      if (c) payload.college = c;
+
       const res = await fetch(`${API_URL}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || 'Signup failed');
-      }
+      if (!res.ok) throw new Error(await readAuthError(res));
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
     },
   });
 }
@@ -77,16 +102,16 @@ export function useLogin() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          email: data.email.trim().toLowerCase(),
+          password: data.password,
+        }),
       });
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || 'Login failed');
-      }
+      if (!res.ok) throw new Error(await readAuthError(res));
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
     },
   });
 }

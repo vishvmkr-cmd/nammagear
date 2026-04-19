@@ -15,7 +15,7 @@ jobs:
         image: postgres:16
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: nammagear_test
+          POSTGRES_DB: student-gear-shop_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -46,7 +46,7 @@ jobs:
       - name: Run migrations
         run: pnpm --filter api prisma migrate deploy
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/nammagear_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/student-gear-shop_test
 
       - name: Build frontend
         run: pnpm --filter web build

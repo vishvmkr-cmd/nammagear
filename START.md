@@ -1,7 +1,7 @@
-# 🚀 Quick Start Guide - NammaGear
+# 🚀 Quick Start Guide - Student Gear Shop
 
 ## Project Location
-Your project is now at: `~/Desktop/nammagear`
+Your project is now at: `~/Desktop/student-gear-shop`
 
 ## Current Status
 - ✅ Node.js, pnpm installed
@@ -13,7 +13,7 @@ Your project is now at: `~/Desktop/nammagear`
 
 ```bash
 # 1. Open Terminal and navigate to project
-cd ~/Desktop/nammagear
+cd ~/Desktop/student-gear-shop
 
 # 2. Add Node to PATH (for this session)
 export PATH="$HOME/.node/bin:$PATH"
@@ -21,7 +21,7 @@ export PATH="$HOME/.node/bin:$PATH"
 # 3. Install PostgreSQL (if not already installed)
 brew install postgresql@16
 brew services start postgresql@16
-createdb nammagear
+createdb student-gear-shop
 
 # 4. Run database setup (first time only)
 pnpm --filter api prisma migrate dev --name init

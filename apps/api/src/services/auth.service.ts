@@ -8,7 +8,7 @@ export interface SignupData {
   password: string;
   name: string;
   pincode: string;
-  phone?: string;
+  phone: string;
   college?: string;
 }
 
@@ -18,12 +18,18 @@ export interface LoginData {
 }
 
 export async function signup(data: SignupData) {
-  if (!isBangalorePincode(data.pincode)) {
+  const email = data.email.trim().toLowerCase();
+  const pincode = data.pincode.trim();
+  const phone = data.phone.trim();
+  const name = data.name.trim();
+  const college = data.college?.trim() || undefined;
+
+  if (!isBangalorePincode(pincode)) {
     throw new Error('Only Bangalore pincodes (560001-560103) are allowed');
   }
 
   const existingUser = await prisma.user.findUnique({
-    where: { email: data.email },
+    where: { email },
   });
 
   if (existingUser) {
@@ -31,22 +37,23 @@ export async function signup(data: SignupData) {
   }
 
   const passwordHash = await hashPassword(data.password);
-  const area = PINCODE_TO_AREA[data.pincode] || 'Bangalore';
+  const area = PINCODE_TO_AREA[pincode] || 'Bangalore';
 
   const user = await prisma.user.create({
     data: {
-      email: data.email,
+      email,
       passwordHash,
-      name: data.name,
-      pincode: data.pincode,
+      name,
+      pincode,
       area,
-      phone: data.phone,
-      college: data.college,
+      phone,
+      college,
     },
     select: {
       id: true,
       email: true,
       name: true,
+      role: true,
       pincode: true,
       area: true,
       phone: true,
@@ -59,14 +66,15 @@ export async function signup(data: SignupData) {
     },
   });
 
-  const token = signToken({ userId: user.id, email: user.email });
+  const token = signToken({ userId: user.id, email: user.email, role: user.role });
 
   return { user, token };
 }
 
 export async function login(data: LoginData) {
+  const email = data.email.trim().toLowerCase();
   const user = await prisma.user.findUnique({
-    where: { email: data.email },
+    where: { email },
   });
 
   if (!user) {
@@ -79,7 +87,7 @@ export async function login(data: LoginData) {
     throw new Error('Invalid email or password');
   }
 
-  const token = signToken({ userId: user.id, email: user.email });
+  const token = signToken({ userId: user.id, email: user.email, role: user.role });
 
   const { passwordHash, ...userWithoutPassword } = user;
 
@@ -93,6 +101,7 @@ export async function getUserById(userId: string) {
       id: true,
       email: true,
       name: true,
+      role: true,
       pincode: true,
       area: true,
       phone: true,

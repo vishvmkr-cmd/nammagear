@@ -3,7 +3,7 @@
 ## ✅ Completed Steps
 
 1. **Git Repository Initialized**
-   - Repository created in `/Users/vasumakkar/Desktop/nammagear`
+   - Repository created in `/Users/vasumakkar/Desktop/student-gear-shop`
    - Default branch: `main`
 
 2. **Initial Commit Created**
@@ -24,7 +24,7 @@
 
 1. Go to https://github.com/new
 2. Fill in the details:
-   - **Repository name:** `nammagear`
+   - **Repository name:** `student-gear-shop`
    - **Description:** "Peer-to-peer marketplace for Bangalore students to buy and sell used electronics"
    - **Visibility:** Choose Public or Private
    - **DO NOT** initialize with README, .gitignore, or license (we already have these)
@@ -35,10 +35,10 @@
 After creating the repository on GitHub, run these commands:
 
 ```bash
-cd ~/Desktop/nammagear
+cd ~/Desktop/student-gear-shop
 
 # Add the remote (replace YOUR_USERNAME with your GitHub username)
-git remote add origin https://github.com/YOUR_USERNAME/nammagear.git
+git remote add origin https://github.com/YOUR_USERNAME/student-gear-shop.git
 
 # Verify the remote was added
 git remote -v
@@ -66,7 +66,7 @@ git push -f origin main
 
 1. Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
 2. Click "Generate new token (classic)"
-3. Give it a name like "NammaGear Development"
+3. Give it a name like "Student Gear Shop Development"
 4. Select scopes: `repo` (full control)
 5. Generate token and save it securely
 6. Use the token as your password when pushing
@@ -93,7 +93,7 @@ git push -f origin main
 
 5. Change remote to SSH:
    ```bash
-   git remote set-url origin git@github.com:YOUR_USERNAME/nammagear.git
+   git remote set-url origin git@github.com:YOUR_USERNAME/student-gear-shop.git
    ```
 
 ## 🚀 GitHub Actions CI/CD
@@ -206,7 +206,7 @@ Your SSH key isn't set up correctly. Follow the SSH setup steps above.
 Remove and re-add:
 ```bash
 git remote remove origin
-git remote add origin https://github.com/YOUR_USERNAME/nammagear.git
+git remote add origin https://github.com/YOUR_USERNAME/student-gear-shop.git
 ```
 
 ## ✅ Verification Checklist

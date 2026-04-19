@@ -54,7 +54,7 @@
 ### Step 1: Create Repository on GitHub
 
 1. Go to https://github.com/new
-2. Set **Repository name** to: `nammagear`
+2. Set **Repository name** to: `student-gear-shop`
 3. Set **Description** to: "Peer-to-peer marketplace for Bangalore students to buy and sell used electronics"
 4. Choose **Public** or **Private**
 5. **DO NOT** check any initialization options (README, .gitignore, license)
@@ -65,7 +65,7 @@
 #### Method A: Use the Setup Script (Easiest)
 
 ```bash
-cd ~/Desktop/nammagear
+cd ~/Desktop/student-gear-shop
 ./setup-github.sh
 ```
 
@@ -77,10 +77,10 @@ The script will guide you through:
 #### Method B: Manual Setup
 
 ```bash
-cd ~/Desktop/nammagear
+cd ~/Desktop/student-gear-shop
 
 # Replace YOUR_USERNAME with your actual GitHub username
-git remote add origin https://github.com/YOUR_USERNAME/nammagear.git
+git remote add origin https://github.com/YOUR_USERNAME/student-gear-shop.git
 
 # Push to GitHub
 git push -u origin main
@@ -92,7 +92,7 @@ When prompted for password, use a **Personal Access Token** (not your GitHub pas
 
 1. Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
 2. Click "Generate new token (classic)"
-3. Name it: "NammaGear Development"
+3. Name it: "Student Gear Shop Development"
 4. Set expiration: 90 days (or custom)
 5. Select scope: `repo` (Full control of private repositories)
 6. Generate and **save the token securely**
@@ -203,7 +203,7 @@ git branch -d feature/auth-pages
 ### Error: "remote origin already exists"
 ```bash
 git remote remove origin
-git remote add origin https://github.com/YOUR_USERNAME/nammagear.git
+git remote add origin https://github.com/YOUR_USERNAME/student-gear-shop.git
 ```
 
 ### Error: "Support for password authentication was removed"

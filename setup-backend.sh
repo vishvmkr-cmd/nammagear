@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# NammaGear - Backend Setup Script
+# Student Gear Shop - Backend Setup Script
 
 set -e
 
-echo "🚀 NammaGear Backend Setup"
+echo "🚀 Student Gear Shop Backend Setup"
 echo "=========================="
 echo ""
 
@@ -46,7 +46,7 @@ echo "✅ Backend setup complete!"
 echo ""
 echo "📋 Next steps:"
 echo "   1. Install PostgreSQL 16 (via Homebrew or Docker)"
-echo "   2. Create database: createdb nammagear"
+echo "   2. Create database: createdb student-gear-shop"
 echo "   3. Run migrations: pnpm --filter api prisma migrate deploy"
 echo "   4. Seed database: pnpm --filter api prisma db seed"
 echo "   5. Start dev server: pnpm --filter api dev"

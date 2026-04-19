@@ -14,7 +14,7 @@ export async function uploadImage(
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
-        folder: `nammagear/listings/${userId}`,
+        folder: `student-gear-shop/listings/${userId}`,
         resource_type: 'image',
         transformation: [
           { width: 1200, height: 1200, crop: 'limit' },

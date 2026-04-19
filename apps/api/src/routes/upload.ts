@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAdmin } from '../middleware/admin.js';
 import { uploadImage, deleteImage } from '../lib/cloudinary.js';
 
 const router = Router();
@@ -27,7 +27,7 @@ const upload = multer({
 
 router.post(
   '/image',
-  requireAuth,
+  requireAdmin,
   upload.single('image'),
   async (req: Request, res: Response) => {
     try {
@@ -49,7 +49,7 @@ router.post(
 
 router.delete(
   '/image/:publicId',
-  requireAuth,
+  requireAdmin,
   async (req: Request, res: Response) => {
     try {
       const publicId = typeof req.params.publicId === 'string' 

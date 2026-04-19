@@ -1,4 +1,4 @@
-# NammaGear - COMPLETE Setup Status
+# Student Gear Shop - COMPLETE Setup Status
 
 ## 🎉 INSTALLATION COMPLETE
 
@@ -76,22 +76,22 @@ Everything is installed except the database. You have 2 options:
 ```bash
 brew install postgresql@16
 brew services start postgresql@16
-createdb nammagear
+createdb student-gear-shop
 ```
 
 ### Option 2: Docker
 ```bash
-docker run --name nammagear-postgres \
+docker run --name student-gear-shop-postgres \
   -e POSTGRES_PASSWORD=postgres \
   -p 5432:5432 \
   -d postgres:16
 
-docker exec -it nammagear-postgres createdb -U postgres nammagear
+docker exec -it student-gear-shop-postgres createdb -U postgres student-gear-shop
 ```
 
 ### After Installing PostgreSQL:
 ```bash
-cd ~/Desktop/nammagear
+cd ~/Desktop/student-gear-shop
 export PATH="$HOME/.node/bin:$PATH"
 
 # Run database migrations
@@ -107,7 +107,7 @@ pnpm --filter api prisma db seed
 
 ### Terminal 1 - Backend API
 ```bash
-cd ~/Desktop/nammagear
+cd ~/Desktop/student-gear-shop
 export PATH="$HOME/.node/bin:$PATH"
 pnpm --filter api dev
 ```
@@ -115,7 +115,7 @@ Server runs on `http://localhost:4000`
 
 ### Terminal 2 - Frontend
 ```bash
-cd ~/Desktop/nammagear
+cd ~/Desktop/student-gear-shop
 export PATH="$HOME/.node/bin:$PATH"
 pnpm --filter web dev
 ```
@@ -123,7 +123,7 @@ App runs on `http://localhost:3000`
 
 ### Or run both together:
 ```bash
-cd ~/Desktop/nammagear
+cd ~/Desktop/student-gear-shop
 export PATH="$HOME/.node/bin:$PATH"
 pnpm dev
 ```
@@ -160,7 +160,7 @@ curl "http://localhost:4000/api/listings?page=1&limit=10"
 ## 📁 Complete Project Structure
 
 ```
-nammagear/
+student-gear-shop/
 ├── .cursorrules                        ✅ Context for Cursor
 ├── .gitignore                          ✅
 ├── README.md                           ✅
@@ -233,7 +233,7 @@ nammagear/
 
 ### Backend (apps/api/.env) - Already configured
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/nammagear"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/student-gear-shop"
 JWT_SECRET="dev-secret-b8f3a92c1d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a"
 JWT_EXPIRES_IN="7d"
 PORT=4000
@@ -313,7 +313,7 @@ Build `/login` and `/signup` pages with:
 # 1. Install PostgreSQL (choose one method above)
 
 # 2. Run migrations
-cd ~/Desktop/nammagear
+cd ~/Desktop/student-gear-shop
 export PATH="$HOME/.node/bin:$PATH"
 pnpm --filter api prisma migrate dev --name init
 pnpm --filter api prisma db seed

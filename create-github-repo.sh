@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# NammaGear - Create GitHub Repository via API
+# Student Gear Shop - Create GitHub Repository via API
 
 set -e
 
-echo "🚀 NammaGear - Create GitHub Repository"
+echo "🚀 Student Gear Shop - Create GitHub Repository"
 echo "========================================"
 
 # Get GitHub username
@@ -31,12 +31,12 @@ RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
   -H "Accept: application/vnd.github.v3+json" \
   -H "Authorization: token $GITHUB_TOKEN" \
   https://api.github.com/user/repos \
-  -d '{"name":"nammagear","description":"Peer-to-peer marketplace for Bangalore students","private":false}')
+  -d '{"name":"student-gear-shop","description":"Peer-to-peer marketplace for Bangalore students","private":false}')
 
 HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
 
 if [ "$HTTP_CODE" = "201" ] || [ "$HTTP_CODE" = "422" ]; then
-    REPO_URL="https://github.com/$GITHUB_USERNAME/nammagear.git"
+    REPO_URL="https://github.com/$GITHUB_USERNAME/student-gear-shop.git"
     
     if [ "$HTTP_CODE" = "422" ]; then
         echo "⚠️  Repository already exists, using it..."
@@ -49,14 +49,14 @@ if [ "$HTTP_CODE" = "201" ] || [ "$HTTP_CODE" = "422" ]; then
     git remote add origin "$REPO_URL"
     
     # Push with token
-    git remote set-url origin "https://${GITHUB_TOKEN}@github.com/${GITHUB_USERNAME}/nammagear.git"
+    git remote set-url origin "https://${GITHUB_TOKEN}@github.com/${GITHUB_USERNAME}/student-gear-shop.git"
     git push -u origin main
     
     # Reset URL
     git remote set-url origin "$REPO_URL"
     
     echo ""
-    echo "🎉 Success! https://github.com/$GITHUB_USERNAME/nammagear"
+    echo "🎉 Success! https://github.com/$GITHUB_USERNAME/student-gear-shop"
 else
     echo "❌ Failed (HTTP $HTTP_CODE)"
     exit 1

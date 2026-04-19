@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+import { API_URL } from './api-url';
 
 export interface Listing {
   id: string;
@@ -182,27 +181,69 @@ export function useDeleteListing(id: string) {
 export function useUploadImages() {
   return useMutation({
     mutationFn: async (files: File[]) => {
-      const formData = new FormData();
-      files.forEach((file) => {
-        formData.append('images', file);
-      });
+      const urls: string[] = [];
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('image', file);
 
-      const res = await fetch(`${API_URL}/upload`, {
-        method: 'POST',
+        const res = await fetch(`${API_URL}/upload/image`, {
+          method: 'POST',
+          credentials: 'include',
+          body: formData,
+        });
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error || 'Failed to upload image');
+        }
+        const data = await res.json();
+        urls.push(data.url);
+      }
+      return { urls };
+    },
+  });
+}
+
+export function useMyListings() {
+  return useQuery({
+    queryKey: ['my-listings'],
+    queryFn: async () => {
+      const res = await fetch(`${API_URL}/users/me/listings`, {
         credentials: 'include',
-        body: formData,
       });
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.error || 'Failed to upload images');
+        throw new Error(error.error || 'Failed to fetch your listings');
       }
       return res.json();
     },
   });
 }
 
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { name?: string; phone?: string; college?: string }) => {
+      const res = await fetch(`${API_URL}/users/me`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to update profile');
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+    },
+  });
+}
+
 export function useCategories() {
-  return useQuery({
+  return useQuery<{ categories: Array<{ id: string; name: string; slug: string }> }>({
     queryKey: ['categories'],
     queryFn: async () => {
       const res = await fetch(`${API_URL}/categories`, {
@@ -214,5 +255,130 @@ export function useCategories() {
       }
       return res.json();
     },
+  });
+}
+
+// ─── Orders ────────────────────────────────────────────────────────
+
+export function useCreateOrder() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { listingId: string; notes?: string }) => {
+      const res = await fetch(`${API_URL}/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to create order');
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+    },
+  });
+}
+
+export function useMyOrders() {
+  return useQuery({
+    queryKey: ['orders'],
+    queryFn: async () => {
+      const res = await fetch(`${API_URL}/orders`, {
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to fetch orders');
+      }
+      return res.json();
+    },
+  });
+}
+
+export function useOrder(id: string | undefined) {
+  return useQuery({
+    queryKey: ['order', id],
+    queryFn: async () => {
+      if (!id) throw new Error('No order ID');
+      const res = await fetch(`${API_URL}/orders/${id}`, {
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to fetch order');
+      }
+      return res.json();
+    },
+    enabled: !!id,
+  });
+}
+
+// ─── Service Tickets ───────────────────────────────────────────────
+
+export function useCreateServiceTicket() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: {
+      orderId: string;
+      subject: string;
+      description: string;
+      priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+    }) => {
+      const res = await fetch(`${API_URL}/service-tickets`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to create service ticket');
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['service-tickets'] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+    },
+  });
+}
+
+export function useMyServiceTickets() {
+  return useQuery({
+    queryKey: ['service-tickets'],
+    queryFn: async () => {
+      const res = await fetch(`${API_URL}/service-tickets`, {
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to fetch service tickets');
+      }
+      return res.json();
+    },
+  });
+}
+
+export function useServiceTicket(id: string | undefined) {
+  return useQuery({
+    queryKey: ['service-ticket', id],
+    queryFn: async () => {
+      if (!id) throw new Error('No ticket ID');
+      const res = await fetch(`${API_URL}/service-tickets/${id}`, {
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to fetch service ticket');
+      }
+      return res.json();
+    },
+    enabled: !!id,
   });
 }

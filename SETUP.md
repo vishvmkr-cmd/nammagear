@@ -1,6 +1,6 @@
-# Quick Setup Guide for NammaGear
+# Quick Setup Guide for Student Gear Shop
 
-Follow these steps to get NammaGear running on your local machine:
+Follow these steps to get Student Gear Shop running on your local machine:
 
 ## 1. Prerequisites
 
@@ -16,7 +16,7 @@ Create a PostgreSQL database:
 
 ```bash
 # Using psql
-createdb nammagear
+createdb student-gear-shop
 
 # Or using PostgreSQL GUI tools like pgAdmin
 ```
@@ -32,7 +32,7 @@ cp apps/api/.env.example apps/api/.env
 
 2. Edit `apps/api/.env` with your values:
 ```env
-DATABASE_URL="postgresql://your_username:your_password@localhost:5432/nammagear"
+DATABASE_URL="postgresql://your_username:your_password@localhost:5432/student-gear-shop"
 JWT_SECRET="generate-a-random-secret-key-here"
 CLOUDINARY_CLOUD_NAME="your-cloudinary-cloud-name"
 CLOUDINARY_API_KEY="your-cloudinary-api-key"
@@ -100,7 +100,7 @@ This will start:
 ## 7. Verify Everything Works
 
 1. Open http://localhost:3000 in your browser
-2. You should see the NammaGear homepage
+2. You should see the Student Gear Shop homepage
 3. Try signing up with a test account
 4. Create a test listing
 
@@ -108,7 +108,7 @@ This will start:
 
 ### Issue: "Cannot connect to database"
 - **Solution**: Make sure PostgreSQL is running and DATABASE_URL is correct
-- Check: `psql -U your_username -d nammagear` to test connection
+- Check: `psql -U your_username -d student-gear-shop` to test connection
 
 ### Issue: "Cloudinary upload failed"
 - **Solution**: Verify your Cloudinary credentials in `.env`

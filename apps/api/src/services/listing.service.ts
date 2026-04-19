@@ -295,7 +295,7 @@ export async function getListingContact(id: string) {
 
   const phone = listing.user.phone;
   const message = encodeURIComponent(
-    `Hi, I saw your ${listing.title} on NammaGear. Is it still available?`
+    `Hi, I saw your ${listing.title} on Student Gear Shop. Is it still available?`
   );
   const whatsappUrl = `https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${message}`;
 

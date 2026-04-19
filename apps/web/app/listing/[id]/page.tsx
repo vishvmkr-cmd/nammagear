@@ -5,33 +5,42 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Nav } from '@/components/nav';
 import { Button } from '@/components/ui/button';
-import { useListing, useListingContact } from '@/lib/api';
+import { useListing, useListingContact, useCreateOrder } from '@/lib/api';
+import { useAuth } from '@/lib/auth';
 import { formatPrice, formatTimeAgo, getConditionLabel } from '@/lib/utils';
-import { MapPin, Eye, Heart, ExternalLink, MessageCircle } from 'lucide-react';
+import { MapPin, Eye, Heart, ExternalLink, MessageCircle, ShoppingCart, Shield } from 'lucide-react';
 
 export default function ListingDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { data: listing, isLoading } = useListing(params?.id as string);
   const { refetch: getContact } = useListingContact(params?.id as string);
+  const { data: authData } = useAuth();
+  const createOrder = useCreateOrder();
   const [activeImage, setActiveImage] = useState(0);
   const [showContact, setShowContact] = useState(false);
-  const [contact, setContact] = useState<{ phone: string } | null>(null);
+  const [contact, setContact] = useState<{ phone: string; whatsappUrl: string } | null>(null);
+  const [contactError, setContactError] = useState('');
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderError, setOrderError] = useState('');
 
   const handleContactClick = async () => {
+    setContactError('');
     try {
       const { data } = await getContact();
-      setContact(data);
-      setShowContact(true);
-      
-      if (data?.phone) {
-        const whatsappUrl = `https://wa.me/91${data.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-          `Hi! I'm interested in your listing: ${listing?.title}`
-        )}`;
-        window.open(whatsappUrl, '_blank');
+      if (data) {
+        setContact(data);
+        setShowContact(true);
+        if (data.whatsappUrl) {
+          window.open(data.whatsappUrl, '_blank');
+        }
       }
-    } catch (error) {
-      router.push('/auth/signin?redirect=' + encodeURIComponent(`/listing/${params?.id}`));
+    } catch (error: any) {
+      if (error?.message?.includes('Not authenticated') || error?.message?.includes('401')) {
+        router.push('/auth/signin?redirect=' + encodeURIComponent(`/listing/${params?.id}`));
+      } else {
+        setContactError(error?.message || 'Could not fetch contact info. Please sign in first.');
+      }
     }
   };
 
@@ -69,24 +78,8 @@ export default function ListingDetailPage() {
     <>
       <Nav />
       <main className="flex-1 min-h-screen py-8">
-        <div className="max-w-[1400px] mx-auto px-8">
-          <div className="rounded-2xl overflow-hidden border-[0.5px] border-[var(--line-strong)] bg-[var(--bg-elevated)] shadow-browser">
-            <div className="flex items-center gap-3 px-[18px] py-[13px] bg-[var(--bg-muted)] border-b-[0.5px] border-[var(--line)]">
-              <div className="flex gap-[7px]">
-                <span className="w-[11px] h-[11px] rounded-full bg-[#E28577]" />
-                <span className="w-[11px] h-[11px] rounded-full bg-[#E9C473]" />
-                <span className="w-[11px] h-[11px] rounded-full bg-[#8BB58B]" />
-              </div>
-              <div className="flex-1 font-mono text-[11px] text-muted bg-[var(--bg-elevated)] py-[7px] px-[14px] rounded-md border-[0.5px] border-[var(--line)] flex items-center gap-2">
-                <svg className="w-[10px] h-[10px] text-forest flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <rect x="3" y="11" width="18" height="11" rx="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
-                nammagear.in/listing/{listing.id.slice(0, 8)}
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-[1.1fr_1fr] gap-12 p-9">
+        <div className="max-w-[1200px] mx-auto px-8">
+            <div className="grid md:grid-cols-[1.1fr_1fr] gap-12">
               {/* Gallery */}
               <div>
                 <div className="aspect-[4/3] rounded-[10px] bg-gradient-to-br from-[var(--img-slate-1)] to-[var(--img-slate-2)] flex items-center justify-center relative overflow-hidden">
@@ -150,7 +143,7 @@ export default function ListingDetailPage() {
                     {listing.area}
                   </span>
                   <span>· {listing.views} views</span>
-                  <span>· {listing.saves?.length || 0} saves</span>
+                  {listing.saves && <span>· {listing.saves.length} saves</span>}
                 </div>
 
                 <div className="font-serif text-[46px] font-normal tracking-[-0.035em] leading-[1] mb-6 text-ink">
@@ -198,6 +191,48 @@ export default function ListingDetailPage() {
                 </div>
 
                 <Button
+                  onClick={async () => {
+                    setOrderError('');
+                    if (!authData?.user) {
+                      router.push('/auth/signin?redirect=' + encodeURIComponent(`/listing/${params?.id}`));
+                      return;
+                    }
+                    try {
+                      await createOrder.mutateAsync({ listingId: listing.id });
+                      setOrderSuccess(true);
+                    } catch (err: unknown) {
+                      setOrderError(err instanceof Error ? err.message : 'Failed to place order');
+                    }
+                  }}
+                  variant="forest"
+                  size="lg"
+                  className="w-full justify-center mb-2.5"
+                  disabled={createOrder.isPending || orderSuccess || listing.status !== 'ACTIVE'}
+                >
+                  <ShoppingCart className="w-[18px] h-[18px]" />
+                  {createOrder.isPending ? 'Processing...' : orderSuccess ? 'Order Placed!' : listing.status !== 'ACTIVE' ? 'Not Available' : 'Buy Now'}
+                </Button>
+
+                {orderSuccess && (
+                  <div className="mb-2.5 p-3 bg-forest-soft border border-forest/20 rounded-xl text-sm text-forest-text text-center">
+                    Order confirmed! 1-year service support is now active. <a href="/my-orders" className="underline font-medium">View your orders &rarr;</a>
+                  </div>
+                )}
+
+                {orderError && (
+                  <div className="mb-2.5 p-3 bg-rose-soft border border-rose/20 rounded-xl text-sm text-rose text-center">
+                    {orderError}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 p-3 bg-forest-soft rounded-xl mb-4">
+                  <Shield className="w-4 h-4 text-forest-text flex-shrink-0" />
+                  <span className="text-[12px] text-forest-text">
+                    Buy via Student Gear Shop and get <strong>1 year of free service support</strong>
+                  </span>
+                </div>
+
+                <Button
                   onClick={handleContactClick}
                   variant="wa"
                   size="lg"
@@ -206,6 +241,12 @@ export default function ListingDetailPage() {
                   <MessageCircle className="w-[18px] h-[18px]" />
                   Chat on WhatsApp
                 </Button>
+
+                {contactError && (
+                  <div className="mb-2.5 p-3 bg-rose-soft border border-rose/20 rounded-lg text-sm text-rose text-center">
+                    {contactError}
+                  </div>
+                )}
 
                 <Button variant="outline" size="lg" className="w-full justify-center">
                   Make an offer
@@ -219,7 +260,6 @@ export default function ListingDetailPage() {
                 </div>
               </div>
             </div>
-          </div>
         </div>
       </main>
     </>

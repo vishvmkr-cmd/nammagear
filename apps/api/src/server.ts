@@ -11,13 +11,17 @@ import userRoutes from './routes/users.js';
 import uploadRoutes from './routes/upload.js';
 import reportRoutes from './routes/reports.js';
 import categoryRoutes from './routes/categories.js';
+import orderRoutes from './routes/orders.js';
+import serviceTicketRoutes from './routes/service-tickets.js';
+import adminRoutes from './routes/admin.js';
 
 export function createServer() {
   const app = express();
 
   app.use(helmet());
+  const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
   app.use(cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: corsOrigin,
     credentials: true,
   }));
   app.use(express.json({ limit: '2mb' }));
@@ -37,6 +41,9 @@ export function createServer() {
   app.use('/api/upload', uploadRoutes);
   app.use('/api/reports', reportRoutes);
   app.use('/api/categories', categoryRoutes);
+  app.use('/api/orders', orderRoutes);
+  app.use('/api/service-tickets', serviceTicketRoutes);
+  app.use('/api/admin', adminRoutes);
 
   app.use(errorHandler);
 

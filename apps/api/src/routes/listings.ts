@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { validate } from '../middleware/validate.js';
 import { requireAuth } from '../middleware/auth.js';
+import { requireAdmin } from '../middleware/admin.js';
 import {
   createListing,
   getListings,
@@ -38,7 +39,7 @@ const updateListingSchema = z.object({
 
 router.post(
   '/',
-  requireAuth,
+  requireAdmin,
   validate(createListingSchema),
   async (req: Request, res: Response) => {
     try {

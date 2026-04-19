@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model User {
   id             String    @id @default(cuid())
   email          String    @unique
@@ -14,6 +19,7 @@ model User {
   passwordHash   String
   name           String
   college        String?
+  role           UserRole  @default(USER)
   verifiedAt     DateTime?
   pincode        String
   area           String
@@ -26,8 +32,11 @@ model User {
   listings       Listing[]
   saves          Save[]
   reports        Report[]  @relation("Reporter")
+  orders         Order[]   @relation("Buyer")
+  serviceTickets ServiceTicket[]
 
   @@index([pincode])
+  @@index([role])
 }
 
 model Category {
@@ -72,6 +81,7 @@ model Listing {
   images      ListingImage[]
   saves       Save[]
   reports     Report[]
+  orders      Order[]
 
   @@index([pincode, status])
   @@index([categoryId, status])
@@ -106,4 +116,65 @@ model Report {
   reason     String
   resolved   Boolean @default(false)
   createdAt  DateTime @default(now())
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  buyerId         String
+  buyer           User        @relation("Buyer", fields: [buyerId], references: [id])
+  listingId       String
+  listing         Listing     @relation(fields: [listingId], references: [id])
+  amount          Int
+  status          OrderStatus @default(PENDING)
+  serviceExpiresAt DateTime
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  serviceTickets  ServiceTicket[]
+
+  @@index([buyerId])
+  @@index([listingId])
+  @@index([status])
+  @@index([serviceExpiresAt])
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model ServiceTicket {
+  id          String         @id @default(cuid())
+  orderId     String
+  order       Order          @relation(fields: [orderId], references: [id])
+  userId      String
+  user        User           @relation(fields: [userId], references: [id])
+  subject     String
+  description String
+  status      TicketStatus   @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+  resolution  String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([orderId])
+  @@index([userId])
+  @@index([status])
 }

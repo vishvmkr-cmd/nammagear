@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# NammaGear - GitHub Quick Setup Script
+# Student Gear Shop - GitHub Quick Setup Script
 # This script helps you connect your local repository to GitHub
 
 set -e
 
-echo "🚀 NammaGear GitHub Setup"
+echo "🚀 Student Gear Shop GitHub Setup"
 echo "=========================="
 echo ""
 
@@ -23,7 +23,7 @@ if [ -z "$GITHUB_USERNAME" ]; then
 fi
 
 # Construct repository URL
-REPO_URL="https://github.com/$GITHUB_USERNAME/nammagear.git"
+REPO_URL="https://github.com/$GITHUB_USERNAME/student-gear-shop.git"
 
 echo ""
 echo "📋 Repository URL: $REPO_URL"

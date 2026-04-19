@@ -1,4 +1,4 @@
-# NammaGear - Complete Backend Implementation
+# Student Gear Shop - Complete Backend Implementation
 
 ## ✅ Completed (Backend - Prompts 1-5)
 
@@ -56,17 +56,17 @@ The backend code is complete but needs a running PostgreSQL instance:
 ```bash
 brew install postgresql@16
 brew services start postgresql@16
-createdb nammagear
+createdb student-gear-shop
 ```
 
 **Option 2: Using Docker**
 ```bash
-docker run --name nammagear-postgres \
+docker run --name student-gear-shop-postgres \
   -e POSTGRES_PASSWORD=postgres \
   -p 5432:5432 \
   -d postgres:16
   
-docker exec -it nammagear-postgres createdb -U postgres nammagear
+docker exec -it student-gear-shop-postgres createdb -U postgres student-gear-shop
 ```
 
 ### Database Migrations
@@ -145,7 +145,7 @@ curl http://localhost:4000/health
 ## 📁 Current Structure
 
 ```
-nammagear/
+student-gear-shop/
 ├── .cursorrules                    ✅ Master context for Cursor
 ├── .gitignore                      ✅
 ├── README.md                       ✅
@@ -239,7 +239,7 @@ node dist/index.js
 ```
 
 ### Database connection errors
-1. Check PostgreSQL is running: `psql nammagear`
+1. Check PostgreSQL is running: `psql student-gear-shop`
 2. Verify DATABASE_URL in `.env`
 3. Run migrations if needed: `pnpm --filter api prisma migrate deploy`
 

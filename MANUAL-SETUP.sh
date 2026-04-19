@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🎯 NammaGear - Manual Setup Steps"
+echo "🎯 Student Gear Shop - Manual Setup Steps"
 echo "==================================
 "
 echo "Since automated setup requires admin access, please follow these manual steps:"
@@ -15,7 +15,7 @@ echo "   brew install postgresql@16"
 echo "   brew services start postgresql@16"
 echo ""
 echo "3. Create database:"
-echo "   createdb nammagear"
+echo "   createdb student-gear-shop"
 echo ""
 echo "4. Run setup:"
 echo "   cd apps/api"

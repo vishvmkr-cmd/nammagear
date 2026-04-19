@@ -1,4 +1,4 @@
-# NammaGear
+# Student Gear Shop
 
 > Bangalore's student tech marketplace - Pre-loved tech, campus to campus.
 
@@ -47,7 +47,7 @@ A peer-to-peer marketplace for Bangalore students to buy and sell used electroni
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd nammagear
+cd student-gear-shop
 ```
 
 2. Install dependencies:
@@ -93,7 +93,7 @@ pnpm --filter api dev    # Backend on http://localhost:3001
 ## Project Structure
 
 ```
-nammagear/
+student-gear-shop/
 ├── apps/
 │   ├── web/                 # Next.js frontend
 │   │   ├── app/            # App Router pages

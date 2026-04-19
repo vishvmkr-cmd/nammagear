@@ -3,27 +3,36 @@ import { z } from 'zod';
 import { validate } from '../middleware/validate.js';
 import { requireAuth } from '../middleware/auth.js';
 import { signup, login, getUserById } from '../services/auth.service.js';
+import { isBangalorePincode } from '../lib/bangalore.js';
 import rateLimit from 'express-rate-limit';
 
 const router = Router();
 
 const authLimiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 5,
+  max: process.env.NODE_ENV === 'production' ? 5 : 40,
   message: { error: 'Too many requests, please try again later' },
 });
 
-const signupSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  pincode: z.string().length(6, 'Pincode must be 6 digits'),
-  phone: z.string().optional(),
-  college: z.string().optional(),
-});
+const signupSchema = z
+  .object({
+    email: z.string().email('Invalid email address').trim(),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    name: z.string().min(2, 'Name must be at least 2 characters').trim(),
+    pincode: z.string().regex(/^\d{6}$/, 'Pincode must be 6 digits'),
+    phone: z
+      .string()
+      .min(1, 'Phone number is required')
+      .regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number'),
+    college: z.string().optional(),
+  })
+  .refine((d) => isBangalorePincode(d.pincode), {
+    message: 'Only Bangalore pincodes (560001–560103) are allowed',
+    path: ['pincode'],
+  });
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: z.string().email('Invalid email address').trim(),
   password: z.string().min(1, 'Password is required'),
 });
 
@@ -33,12 +42,19 @@ router.post(
   validate(signupSchema),
   async (req: Request, res: Response) => {
     try {
-      const { user, token } = await signup(req.body);
+      const { user, token } = await signup({
+        ...req.body,
+        college:
+          typeof req.body.college === 'string' && req.body.college.trim()
+            ? req.body.college.trim()
+            : undefined,
+      });
 
       const isProduction = process.env.NODE_ENV === 'production';
       const cookieDomain = process.env.COOKIE_DOMAIN || 'localhost';
 
       res.cookie('ng_token', token, {
+        path: '/',
         httpOnly: true,
         secure: isProduction,
         sameSite: 'lax',
@@ -69,6 +85,7 @@ router.post(
       const cookieDomain = process.env.COOKIE_DOMAIN || 'localhost';
 
       res.cookie('ng_token', token, {
+        path: '/',
         httpOnly: true,
         secure: isProduction,
         sameSite: 'lax',
@@ -88,7 +105,15 @@ router.post(
 );
 
 router.post('/logout', (req: Request, res: Response) => {
-  res.clearCookie('ng_token');
+  const isProduction = process.env.NODE_ENV === 'production';
+  const cookieDomain = process.env.COOKIE_DOMAIN || 'localhost';
+  res.clearCookie('ng_token', {
+    path: '/',
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: 'lax',
+    domain: isProduction ? cookieDomain : undefined,
+  });
   res.json({ message: 'Logged out successfully' });
 });
 

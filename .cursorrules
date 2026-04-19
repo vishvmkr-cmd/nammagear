@@ -1,4 +1,4 @@
-You are helping build NammaGear, a peer-to-peer marketplace for Bangalore students to buy and sell used electronics (laptops, monitors, keyboards, etc.).
+You are helping build Student Gear Shop, a peer-to-peer marketplace for Bangalore students to buy and sell used electronics (laptops, monitors, keyboards, etc.).
 
 ## Stack
 - Monorepo with pnpm workspaces: apps/web (Next.js 14 App Router, TypeScript, Tailwind, shadcn/ui) and apps/api (Express, TypeScript, Prisma, PostgreSQL).

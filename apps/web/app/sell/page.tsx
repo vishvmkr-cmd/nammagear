@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Nav } from '@/components/nav';
 import { Button } from '@/components/ui/button';
-import { useCreateListing, useUploadImages } from '@/lib/api';
+import { useCreateListing, useUploadImages, useCategories } from '@/lib/api';
+import { useAuth } from '@/lib/auth';
 import { Upload, X, Check } from 'lucide-react';
 
 const BANGALORE_PINCODES: Record<string, string> = {
@@ -59,17 +60,11 @@ const BANGALORE_PINCODES: Record<string, string> = {
   '560103': 'Jala Hobli',
 };
 
-const CATEGORIES = [
-  { id: 'laptops', name: 'Laptops' },
-  { id: 'monitors', name: 'Monitors' },
-  { id: 'desktops', name: 'Desktops' },
-  { id: 'keyboards', name: 'Keyboards' },
-  { id: 'audio', name: 'Audio' },
-  { id: 'tablets', name: 'Tablets' },
-];
-
 export default function SellPage() {
   const router = useRouter();
+  const { data: authData, isLoading: authLoading } = useAuth();
+  const { data: catData, isLoading: catsLoading } = useCategories();
+  const categories = catData?.categories || [];
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [formData, setFormData] = useState({
@@ -88,6 +83,28 @@ export default function SellPage() {
 
   const uploadImages = useUploadImages();
   const createListing = useCreateListing();
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!authData?.user) {
+      router.replace('/auth/signin?redirect=/sell');
+      return;
+    }
+    if (authData.user.role !== 'ADMIN') {
+      router.replace('/browse');
+    }
+  }, [authLoading, authData, router]);
+
+  if (authLoading || !authData?.user || authData.user.role !== 'ADMIN') {
+    return (
+      <>
+        <Nav />
+        <main className="flex-1 min-h-[50vh] flex items-center justify-center px-4 text-[var(--muted)]">
+          {authLoading ? 'Loading…' : 'Checking access…'}
+        </main>
+      </>
+    );
+  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -160,24 +177,9 @@ export default function SellPage() {
     <>
       <Nav />
       <main className="flex-1 min-h-screen py-8">
-        <div className="max-w-[1400px] mx-auto px-8">
-          <div className="rounded-2xl overflow-hidden border-[0.5px] border-[var(--line-strong)] bg-[var(--bg-elevated)] shadow-browser">
-            <div className="flex items-center gap-3 px-[18px] py-[13px] bg-[var(--bg-muted)] border-b-[0.5px] border-[var(--line)]">
-              <div className="flex gap-[7px]">
-                <span className="w-[11px] h-[11px] rounded-full bg-[#E28577]" />
-                <span className="w-[11px] h-[11px] rounded-full bg-[#E9C473]" />
-                <span className="w-[11px] h-[11px] rounded-full bg-[#8BB58B]" />
-              </div>
-              <div className="flex-1 font-mono text-[11px] text-muted bg-[var(--bg-elevated)] py-[7px] px-[14px] rounded-md border-[0.5px] border-[var(--line)] flex items-center gap-2">
-                <svg className="w-[10px] h-[10px] text-forest flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <rect x="3" y="11" width="18" height="11" rx="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
-                nammagear.in/sell/new
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-10 max-w-[600px] mx-auto">
+        <div className="max-w-[600px] mx-auto px-8">
+          <div className="bg-[var(--bg-elevated)] border border-[var(--line)] rounded-2xl overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+            <form onSubmit={handleSubmit} className="p-8 sm:p-10">
               <h1 className="font-serif text-[clamp(26px,3.2vw,36px)] font-normal tracking-[-0.025em] leading-[1.1] mb-2.5 text-ink">
                 List your item
               </h1>
@@ -250,7 +252,7 @@ export default function SellPage() {
                     className="w-full px-[15px] py-3 border-[0.5px] border-[var(--line-strong)] rounded-[10px] font-sans text-sm bg-[var(--form-bg)] text-ink outline-none transition-colors focus:border-forest focus:bg-[var(--bg-elevated)]"
                   >
                     <option value="">Select category</option>
-                    {CATEGORIES.map((cat) => (
+                    {categories.map((cat) => (
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                   </select>
