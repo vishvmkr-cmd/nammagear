@@ -124,6 +124,18 @@ pnpm --filter api prisma studio
 
 See [SETUP-COMPLETE.md](./SETUP-COMPLETE.md) for detailed status and remaining work (Prompts 7-10).
 
+## GitHub Setup
+
+See [GITHUB-SETUP.md](./GITHUB-SETUP.md) for complete instructions on:
+- Connecting to GitHub
+- Setting up CI/CD
+- Branch protection
+- Daily workflow
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for contribution guidelines.
+
 ## License
 
-Proprietary - Built for Bangalore students
+MIT License - See [LICENSE](./LICENSE) for details

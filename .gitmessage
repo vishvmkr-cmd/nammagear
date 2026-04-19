@@ -1,0 +1,23 @@
+# Commit Message Template
+#
+# Format: <type>: <subject>
+#
+# Types:
+#   feat:     New feature
+#   fix:      Bug fix
+#   docs:     Documentation only
+#   style:    Code style (formatting, semicolons, etc)
+#   refactor: Code refactoring
+#   test:     Adding tests
+#   chore:    Build process, dependencies, etc
+#
+# Example:
+#   feat: add WhatsApp contact button to listing page
+#   fix: resolve authentication cookie issue
+#   docs: update API endpoint documentation
+#
+# Remember:
+# - Use present tense ("add" not "added")
+# - Keep subject under 50 characters
+# - Capitalize first letter
+# - No period at the end
