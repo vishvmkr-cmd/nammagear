@@ -1,7 +1,8 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from './api';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 export interface User {
   id: string;
@@ -23,7 +24,11 @@ export function useAuth() {
     queryKey: ['auth', 'me'],
     queryFn: async () => {
       try {
-        return await api<{ user: User }>('/api/auth/me');
+        const res = await fetch(`${API_URL}/auth/me`, {
+          credentials: 'include',
+        });
+        if (!res.ok) return null;
+        return res.json();
       } catch {
         return null;
       }
@@ -45,10 +50,17 @@ export function useSignup() {
       phone?: string;
       college?: string;
     }) => {
-      return api<{ user: User }>('/api/auth/signup', {
+      const res = await fetch(`${API_URL}/auth/signup`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(data),
       });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Signup failed');
+      }
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
@@ -61,10 +73,17 @@ export function useLogin() {
   
   return useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
-      return api<{ user: User }>('/api/auth/login', {
+      const res = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(data),
       });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Login failed');
+      }
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
@@ -77,7 +96,12 @@ export function useLogout() {
   
   return useMutation({
     mutationFn: async () => {
-      return api('/api/auth/logout', { method: 'POST' });
+      const res = await fetch(`${API_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Logout failed');
+      return res.json();
     },
     onSuccess: () => {
       queryClient.setQueryData(['auth', 'me'], null);

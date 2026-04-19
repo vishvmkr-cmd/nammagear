@@ -10,6 +10,7 @@ import listingRoutes from './routes/listings.js';
 import userRoutes from './routes/users.js';
 import uploadRoutes from './routes/upload.js';
 import reportRoutes from './routes/reports.js';
+import categoryRoutes from './routes/categories.js';
 
 export function createServer() {
   const app = express();
@@ -35,6 +36,7 @@ export function createServer() {
   app.use('/api/users', userRoutes);
   app.use('/api/upload', uploadRoutes);
   app.use('/api/reports', reportRoutes);
+  app.use('/api/categories', categoryRoutes);
 
   app.use(errorHandler);
 
