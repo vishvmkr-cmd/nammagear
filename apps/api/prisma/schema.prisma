@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  phone          String?
+  passwordHash   String
+  name           String
+  college        String?
+  verifiedAt     DateTime?
+  pincode        String
+  area           String
+  avatarUrl      String?
+  rating         Float     @default(0)
+  totalSales     Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  listings       Listing[]
+  saves          Save[]
+  reports        Report[]  @relation("Reporter")
+
+  @@index([pincode])
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  slug     String    @unique
+  name     String
+  listings Listing[]
+}
+
+enum Condition {
+  A
+  B
+  C
+}
+
+enum ListingStatus {
+  ACTIVE
+  SOLD
+  REMOVED
+}
+
+model Listing {
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId  String
+  category    Category      @relation(fields: [categoryId], references: [id])
+  title       String
+  description String
+  condition   Condition
+  price       Int
+  negotiable  Boolean       @default(true)
+  pincode     String
+  area        String
+  ageYears    Float?
+  hasBill     Boolean       @default(false)
+  status      ListingStatus @default(ACTIVE)
+  views       Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  images      ListingImage[]
+  saves       Save[]
+  reports     Report[]
+
+  @@index([pincode, status])
+  @@index([categoryId, status])
+  @@index([createdAt])
+}
+
+model ListingImage {
+  id         String  @id @default(cuid())
+  listingId  String
+  listing    Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  url        String
+  order      Int     @default(0)
+}
+
+model Save {
+  id         String  @id @default(cuid())
+  userId     String
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId  String
+  listing    Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, listingId])
+}
+
+model Report {
+  id         String  @id @default(cuid())
+  reporterId String
+  reporter   User    @relation("Reporter", fields: [reporterId], references: [id])
+  listingId  String
+  listing    Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  reason     String
+  resolved   Boolean @default(false)
+  createdAt  DateTime @default(now())
+}

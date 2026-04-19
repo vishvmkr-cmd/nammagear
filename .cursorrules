@@ -1,0 +1,44 @@
+You are helping build NammaGear, a peer-to-peer marketplace for Bangalore students to buy and sell used electronics (laptops, monitors, keyboards, etc.).
+
+## Stack
+- Monorepo with pnpm workspaces: apps/web (Next.js 14 App Router, TypeScript, Tailwind, shadcn/ui) and apps/api (Express, TypeScript, Prisma, PostgreSQL).
+- Auth: JWT in httpOnly cookies (cookie name: ng_token). Never put tokens in localStorage.
+- Images: Cloudinary (never local disk).
+- Validation: Zod on every API endpoint, both body and params.
+- Database: PostgreSQL via Prisma. All queries go through the Prisma client in apps/api/src/db.ts.
+
+## Conventions
+- All API routes under /api prefix.
+- Use async/await, never callbacks. Wrap async route handlers to forward errors to the error middleware.
+- Every new API endpoint: define a Zod schema first, then validate req.body with it.
+- Prisma models are the source of truth for types; import types from @prisma/client, don't redefine.
+- Frontend: use TanStack Query for all server state. No useEffect fetching.
+- Frontend: use shadcn/ui components. Don't build form inputs from scratch.
+- Pincode validation: use isBangalorePincode() from apps/api/src/lib/bangalore.ts on every listing create/update.
+- Error responses: { error: string, details?: any } with appropriate HTTP status.
+- Never log passwords, tokens, or full user records.
+
+## Rules
+- No any types. Use unknown and narrow, or define proper types.
+- No direct process.env access in business logic — read env at the entry point and pass config down.
+- Every database write that touches 2+ tables must be a Prisma transaction.
+- Keep route handlers thin. Business logic in /services, data access in /db.
+- Do not add new dependencies without telling me first.
+
+## Product rules (hard constraints)
+- Only Bangalore pincodes (560001-560103) are allowed for listings.
+- Only authenticated users can create listings.
+- Users can only edit/delete their own listings (enforce in the service layer).
+- Listings have conditions: A (like new), B (good), C (fair).
+- Listings have status: ACTIVE, SOLD, REMOVED.
+- Max 5 images per listing.
+- Contact happens via WhatsApp deep link — the API returns the seller's phone number only when authenticated.
+
+## When I ask for a feature, output in this order:
+1. The Prisma schema changes (if any), as a migration description
+2. The Zod schema
+3. The service function
+4. The route handler
+5. The frontend hook (TanStack Query)
+6. The UI component
+Do not skip steps. Do not output pseudocode.
