@@ -133,10 +133,10 @@ export default function AdminServiceTicketsPage() {
                     {ticket.description as string}
                   </p>
 
-                  {ticket.resolution && (
+                  {typeof ticket.resolution === 'string' && ticket.resolution && (
                     <div className="bg-forest-soft rounded-xl p-4 mb-3">
                       <div className="font-mono text-[10px] tracking-[0.14em] uppercase text-forest-text mb-1.5">Resolution</div>
-                      <p className="text-sm text-ink-soft">{ticket.resolution as string}</p>
+                      <p className="text-sm text-ink-soft">{ticket.resolution}</p>
                     </div>
                   )}
 

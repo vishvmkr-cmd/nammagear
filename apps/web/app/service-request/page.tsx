@@ -230,10 +230,10 @@ function ServiceRequestContent() {
                         <p className="text-sm text-ink-soft line-clamp-2">
                           {ticket.description as string}
                         </p>
-                        {ticket.resolution && (
+                        {typeof ticket.resolution === 'string' && ticket.resolution && (
                           <div className="mt-3 p-3 bg-forest-soft rounded-xl">
                             <div className="font-mono text-[9px] tracking-[0.14em] uppercase text-forest-text mb-1">Resolution</div>
-                            <p className="text-sm text-ink-soft">{ticket.resolution as string}</p>
+                            <p className="text-sm text-ink-soft">{ticket.resolution}</p>
                           </div>
                         )}
                       </div>

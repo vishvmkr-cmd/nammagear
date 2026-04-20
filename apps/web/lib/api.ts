@@ -76,7 +76,7 @@ export function useListings(filters?: ListingsFilters) {
 }
 
 export function useListing(id: string | undefined) {
-  return useQuery({
+  return useQuery<Listing>({
     queryKey: ['listing', id],
     queryFn: async () => {
       if (!id) throw new Error('No listing ID provided');
