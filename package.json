@@ -6,6 +6,8 @@
   },
   "scripts": {
     "dev": "pnpm -r --parallel dev",
+    "dev:web": "pnpm --filter student-gear-shop-web dev",
+    "dev:api": "pnpm --filter student-gear-shop-api dev",
     "build": "pnpm -r build",
     "start": "pnpm -r start",
     "db:migrate": "pnpm --filter api prisma migrate deploy",
