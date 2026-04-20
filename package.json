@@ -1,6 +1,9 @@
 {
   "name": "student-gear-shop",
   "private": true,
+  "pnpm": {
+    "ignoredBuiltDependencies": ["sharp", "unrs-resolver"]
+  },
   "scripts": {
     "dev": "pnpm -r --parallel dev",
     "build": "pnpm -r build",
