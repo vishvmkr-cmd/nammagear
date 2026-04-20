@@ -8,19 +8,19 @@ const ThemeContext = createContext<{
   theme: Theme;
   toggleTheme: () => void;
 }>({
-  theme: 'light',
+  theme: 'dark',
   toggleTheme: () => {},
 });
 
 export const useTheme = () => useContext(ThemeContext);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light');
+  const [theme, setTheme] = useState<Theme>('dark');
 
   useEffect(() => {
     const saved = localStorage.getItem('ng-theme');
-    let initialTheme: Theme = 'light';
-    
+    let initialTheme: Theme = 'dark';
+
     if (saved === 'light' || saved === 'dark') {
       initialTheme = saved;
     } else {

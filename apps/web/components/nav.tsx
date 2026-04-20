@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import {
   Moon, Sun, LogOut, ShoppingCart,
-  ChevronDown, Menu, X, LayoutDashboard,
+  ChevronDown, Menu, X, LayoutDashboard, User,
 } from 'lucide-react';
 import { useTheme } from './theme-provider';
 import { useAuth, useLogout } from '@/lib/auth';
@@ -75,6 +75,47 @@ const NAV_ITEMS: NavItem[] = [
     href: '/browse?category=others',
   },
 ];
+
+/** Center pill — ABHI-style primary nav (URLs unchanged). */
+const PILL_LINKS = [
+  { label: 'Laptops', href: '/browse?category=laptops' },
+  { label: 'Mobiles', href: '/browse?category=phones' },
+  { label: 'Accessories', href: '/browse?category=accessories' },
+  { label: 'Deals', href: '/collections' },
+] as const;
+
+function NavPillInner() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const browseCat = pathname === '/browse' ? searchParams.get('category') : null;
+
+  const isActive = (href: string) => {
+    if (href.startsWith('/browse')) {
+      const q = href.split('?')[1];
+      const slug = q ? new URLSearchParams(q).get('category') : null;
+      return pathname === '/browse' && browseCat === slug;
+    }
+    if (href.startsWith('/collections')) return pathname.startsWith('/collections');
+    return false;
+  };
+
+  return (
+    <div className="ag-nav-pill">
+      {PILL_LINKS.map((item) => (
+        <Link
+          key={item.href}
+          href={item.href}
+          className={isActive(item.href) ? 'ag-pill-active' : ''}
+        >
+          {item.label}
+        </Link>
+      ))}
+      <Link href="/browse" className="ag-nav-shop">
+        Shop now
+      </Link>
+    </div>
+  );
+}
 
 const ADMIN_NAV_LINKS = [
   { href: '/admin', label: 'Dashboard', hint: 'Overview & stats' },
@@ -269,23 +310,24 @@ export function Nav() {
       className="sticky top-0 z-50"
       style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 94%, transparent)', backdropFilter: 'blur(20px) saturate(1.5)' }}
     >
-      {/* ─── Row 1: Logo · Actions (top right) ─── */}
-      <div style={{ borderBottom: '1px solid var(--line)' }}>
+      {/* ─── Row 1: Logo · Center pill · Actions ─── */}
+      <div style={{ borderBottom: '1px solid var(--line)', position: 'relative' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', height: 56, gap: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', height: 56, gap: 16, position: 'relative' }}>
 
             {/* Logo */}
-            <Link
-              href="/"
-              style={{
-                fontFamily: "'Fraunces', serif", fontWeight: 600, fontSize: 22,
-                letterSpacing: '-0.02em', display: 'flex', alignItems: 'center',
-                gap: 6, textDecoration: 'none', color: 'var(--ink)', flexShrink: 0,
-              }}
-            >
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--saffron)' }} />
-              Namma<em style={{ fontStyle: 'italic', fontWeight: 400, color: 'var(--forest-text)' }}>Gear</em>
+            <Link href="/" className="ag-nav-logo">
+              <span className="ag-nav-logo-mark" aria-hidden="true">A</span>
+              <span>
+                Namma<span style={{ opacity: 0.45, margin: '0 2px' }}>·</span>Gear
+              </span>
             </Link>
+
+            <div className="ag-nav-pill-wrap">
+              <Suspense fallback={<div className="ag-nav-pill" style={{ minWidth: 280, height: 40 }} />}>
+                <NavPillInner />
+              </Suspense>
+            </div>
 
             {/* Top right: theme · account · Sell · Sign in */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 'auto' }}>
@@ -360,13 +402,14 @@ export function Nav() {
 
               {!isLoading && !user && (
                 <Link href="/auth/signin"
+                  className="ag-sign-in"
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 6,
                     padding: '8px 16px', borderRadius: 999, fontSize: 13,
                     fontWeight: 500, color: 'var(--ink-soft)', textDecoration: 'none',
                     border: '1px solid var(--line-strong)', background: 'transparent',
                   }}>
-                  Sign in
+                  <User size={14} /> Log In
                 </Link>
               )}
 
@@ -398,8 +441,8 @@ export function Nav() {
         </div>
       </div>
 
-      {/* ─── Row 2: Category bar (URL-aware active state) ─── */}
-      <div className="nav-category-bar" style={{ borderBottom: '1px solid var(--line)', background: 'var(--bg-elevated)' }}>
+      {/* Row 2: full category strip hidden on desktop (pill nav); mobile drawer still lists all categories */}
+      <div className="nav-category-bar md:hidden" style={{ borderBottom: '1px solid var(--line)', background: 'var(--bg-elevated)' }}>
         <Suspense fallback={<div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px', height: 42 }} />}>
           <NavCategoryStripInner />
         </Suspense>

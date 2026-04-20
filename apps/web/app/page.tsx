@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Nav } from '@/components/nav';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth';
+import { Laptop, Smartphone, Headphones } from 'lucide-react';
 
 export default function HomePage() {
   const { data: authData } = useAuth();
@@ -12,122 +13,93 @@ export default function HomePage() {
     <>
       <Nav />
       <main className="flex-1">
-        {/* ── HERO ── */}
-        <header className="py-20 md:py-[80px] relative">
-          <div className="wrap-wide">
-            <div className="grid md:grid-cols-[1.25fr_1fr] gap-[60px] items-center max-md:grid-cols-1 max-md:gap-12">
+        {/* ── HERO (ABHI-inspired) ── */}
+        <header className="ag-hero">
+          <div className="ag-hero-glow" aria-hidden />
+          <div className="wrap-wide relative z-[2]">
+            <div className="ag-kicker fade-up">
+              <span className="ag-live" />
+              <span>
+                <em>Live</em>
+                {' · '}47 new listings this week
+                {' · '}
+                <em>Bangalore</em>
+              </span>
+            </div>
+
+            <h1 className="ag-display fade-up delay-1">
+              <span className="ag-line1">Pre-loved</span>
+              <span className="ag-line2">Laptops &amp;</span>
+              <span className="ag-line3">Gear.</span>
+            </h1>
+
+            <div className="ag-hero-grid fade-up delay-2">
               <div>
-                <div className="hero-kicker fade-up">
-                  <span className="live-dot" />
-                  <span className="font-mono text-[11px] tracking-[0.16em] uppercase text-[var(--forest-text)]">
-                    Live · 47 new listings this week
-                  </span>
-                  <span className="text-[var(--line-strong)] text-sm">·</span>
-                  <span className="intro-kannada">ಬೆಂಗಳೂರಿಗೆ ಮಾತ್ರ</span>
-                </div>
-
-                <h1 className="h-display mb-8 relative fade-up delay-1">
-                  Pre-loved tech.<br />
-                  <em>Campus</em> to <span className="accent">campus.</span>
-                  <span className="scribble-note">verified students only ↘</span>
-                </h1>
-
-                <p className="h-sub fade-up delay-2">
-                  Laptops, monitors and gear, passed between verified Bangalore students. Fair prices. Pincode-locked. Zero resellers, zero scams.
+                <p className="ag-mono-blurb">
+                  Hand-picked laptops, phones, and accessories from verified students. College-email checks.
+                  Pincode-locked to Bangalore. Direct WhatsApp with sellers — meet on campus, stay safe.
                 </p>
-
-                <div className="hero-cta-group fade-up delay-3">
-                  <div className="hero-search">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-                    <input placeholder="Dell Latitude, mechanical keyboard, 24 inch monitor…" />
-                    <Button>Search</Button>
-                  </div>
-                </div>
-
-                <div className="hero-badges fade-up delay-4">
-                  <span className="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="15" height="15"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> College email verified</span>
-                  <span className="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="15" height="15"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/><circle cx="12" cy="9" r="3"/></svg> Bangalore pincode only</span>
-                  <span className="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="15" height="15"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l2 2"/></svg> Avg. response under 10 min</span>
+                <div className="ag-hero-actions">
+                  <Link href="/browse?category=laptops" className="ag-btn-solid">
+                    Browse laptops →
+                  </Link>
+                  <Link href="/collections" className="ag-btn-ghost">
+                    View deals
+                  </Link>
                 </div>
               </div>
-
-              <div className="hero-gallery fade-up delay-3 hidden md:block">
-                <div className="stamp-verified">Student<br/>verified<br/>· est 2025 ·</div>
-
-                <div className="float-card float-1">
-                  <div className="fc-img" style={{ background: 'linear-gradient(145deg, var(--img-warm-1) 0%, var(--img-warm-2) 100%)' }}>
-                    <span className="fc-corner">Grade A</span>
-                    <svg width="85" height="85" viewBox="0 0 100 100" fill="none">
-                      <rect x="10" y="20" width="80" height="52" rx="3" fill="#2A2823" stroke="#3A362F" strokeWidth="1"/>
-                      <rect x="14" y="24" width="72" height="44" rx="1" fill="#4A5C5A"/>
-                      <rect x="16" y="26" width="68" height="40" rx="1" fill="#6B7D7B" opacity="0.7"/>
-                      <path d="M5 72h90l-4 8H9z" fill="#1A1815"/>
-                      <rect x="44" y="72" width="12" height="3" fill="#0D0B09"/>
-                    </svg>
-                  </div>
-                  <div className="fc-body">
-                    <div className="fc-title">Dell Latitude 5420</div>
-                    <div className="fc-price">₹24,500</div>
-                    <div className="fc-meta">HSR Layout · 2h</div>
-                  </div>
+              <div className="ag-stat-panel">
+                <h3>
+                  <span aria-hidden>→</span> Today&apos;s pulse
+                </h3>
+                <div className="ag-stat-row">
+                  <span>Laptops listed</span>
+                  <span>214</span>
                 </div>
-
-                <div className="float-card float-2">
-                  <div className="fc-img" style={{ background: 'linear-gradient(145deg, var(--img-sage-1) 0%, var(--img-sage-2) 100%)' }}>
-                    <span className="fc-corner">Grade A</span>
-                    <svg width="75" height="75" viewBox="0 0 100 100" fill="none">
-                      <rect x="8" y="18" width="84" height="54" rx="2" fill="#2A322A"/>
-                      <rect x="12" y="22" width="76" height="46" rx="1" fill="#4A5548"/>
-                      <rect x="14" y="24" width="72" height="42" rx="1" fill="#607058" opacity="0.6"/>
-                      <rect x="42" y="72" width="16" height="14" fill="#2A322A"/>
-                      <rect x="32" y="86" width="36" height="4" rx="1" fill="#1D251D"/>
-                    </svg>
-                  </div>
-                  <div className="fc-body">
-                    <div className="fc-title">Dell U2419H 24&quot;</div>
-                    <div className="fc-price">₹6,800</div>
-                    <div className="fc-meta">Koramangala · 5h</div>
-                  </div>
+                <div className="ag-stat-row">
+                  <span>Phones listed</span>
+                  <span>98</span>
                 </div>
-
-                <div className="float-card float-3">
-                  <div className="fc-img" style={{ background: 'linear-gradient(145deg, var(--img-terra-1) 0%, var(--img-terra-2) 100%)' }}>
-                    <span className="fc-corner">Grade A</span>
-                    <svg width="70" height="70" viewBox="0 0 100 100" fill="none">
-                      <rect x="22" y="10" width="56" height="80" rx="6" fill="#2A2823"/>
-                      <rect x="26" y="14" width="48" height="72" rx="2" fill="#D9C8AF"/>
-                      <rect x="28" y="16" width="44" height="68" rx="1" fill="#E8D9BE" opacity="0.6"/>
-                      <circle cx="50" cy="86" r="2" fill="#5A4A33"/>
-                    </svg>
-                  </div>
-                  <div className="fc-body">
-                    <div className="fc-title">iPad Air 4 · 64GB</div>
-                    <div className="fc-price">₹32,000</div>
-                    <div className="fc-meta">Indiranagar · 3h</div>
-                  </div>
+                <div className="ag-stat-row">
+                  <span>Starting from</span>
+                  <span className="ag-price">₹8,500</span>
                 </div>
-
-                <div className="float-card float-4">
-                  <div className="fc-img" style={{ background: 'linear-gradient(145deg, var(--img-slate-1) 0%, var(--img-slate-2) 100%)' }}>
-                    <span className="fc-corner">Grade B</span>
-                    <svg width="75" height="75" viewBox="0 0 100 100" fill="none">
-                      <rect x="8" y="32" width="84" height="36" rx="3" fill="#2A2823"/>
-                      <rect x="12" y="36" width="76" height="28" rx="1" fill="#3A362F"/>
-                      <g fill="#5A5348">
-                        <rect x="16" y="40" width="5" height="5" rx="0.5"/><rect x="23" y="40" width="5" height="5" rx="0.5"/><rect x="30" y="40" width="5" height="5" rx="0.5"/><rect x="37" y="40" width="5" height="5" rx="0.5"/>
-                        <rect x="44" y="40" width="5" height="5" rx="0.5"/><rect x="51" y="40" width="5" height="5" rx="0.5"/><rect x="58" y="40" width="5" height="5" rx="0.5"/><rect x="65" y="40" width="5" height="5" rx="0.5"/>
-                        <rect x="16" y="47" width="5" height="5" rx="0.5"/><rect x="23" y="47" width="5" height="5" rx="0.5"/><rect x="30" y="47" width="5" height="5" rx="0.5"/><rect x="37" y="47" width="5" height="5" rx="0.5"/>
-                        <rect x="44" y="47" width="5" height="5" rx="0.5"/><rect x="51" y="47" width="5" height="5" rx="0.5"/><rect x="58" y="47" width="5" height="5" rx="0.5"/><rect x="65" y="47" width="5" height="5" rx="0.5"/>
-                        <rect x="20" y="56" width="60" height="5" rx="0.5"/>
-                      </g>
-                    </svg>
-                  </div>
-                  <div className="fc-body">
-                    <div className="fc-title">Keychron K2 · brown</div>
-                    <div className="fc-price">₹5,800</div>
-                    <div className="fc-meta">Jayanagar · 1d</div>
-                  </div>
+                <div className="ag-stat-row">
+                  <span>Avg. response</span>
+                  <span>&lt; 10 min</span>
                 </div>
+              </div>
+            </div>
+
+            <div className="ag-feature-grid fade-up delay-3">
+              <div className="ag-feature-card">
+                <Laptop className="ag-f-icon" size={22} strokeWidth={1.5} />
+                <h3>Refurbished laptops</h3>
+                <p>Dell, Lenovo, HP — business-grade panels, graded A/B/C, student-sourced.</p>
+                <span className="ag-from">From ₹14,500</span>
+              </div>
+              <div className="ag-feature-card">
+                <Smartphone className="ag-f-icon" size={22} strokeWidth={1.5} />
+                <h3>Phones &amp; tablets</h3>
+                <p>Unlocked devices, clear IMEI, WhatsApp video checks before you pay.</p>
+                <span className="ag-from">From ₹12,000</span>
+              </div>
+              <div className="ag-feature-card">
+                <Headphones className="ag-f-icon" size={22} strokeWidth={1.5} />
+                <h3>Audio &amp; accessories</h3>
+                <p>Headsets, keyboards, monitors — tested, no mystery imports.</p>
+                <span className="ag-from">From ₹499</span>
+              </div>
+            </div>
+
+            <div className="ag-brand-strip fade-up delay-4">
+              <p>— Authorized-style partner brands students trust —</p>
+              <div className="ag-brand-logos">
+                <span>DELL</span>
+                <span>LENOVO</span>
+                <span>HP</span>
+                <span>APPLE</span>
+                <span>ASUS</span>
               </div>
             </div>
           </div>
@@ -151,27 +123,48 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── STATS ── */}
-        <section className="py-[72px] border-b-[0.5px] border-[var(--line)]">
-          <div className="wrap">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-10">
-              <div><div className="stat-num"><em>520</em>+</div><div className="stat-label">items listed<br/>across <em>Bangalore</em></div></div>
-              <div><div className="stat-num">12</div><div className="stat-label">colleges<br/>with verified sellers</div></div>
-              <div><div className="stat-num">₹1.4<sup>Cr</sup></div><div className="stat-label">in deals facilitated<br/><em>since launch</em></div></div>
-              <div><div className="stat-num">4.8<span className="text-[0.45em] text-[var(--saffron-text)]">★</span></div><div className="stat-label">avg. seller rating<br/>from 1,200 buyers</div></div>
-            </div>
-          </div>
-        </section>
-
         {/* ── 01 CATEGORY TILES ── */}
         <section className="section">
           <div className="wrap-wide">
             <div className="section-header">
               <div className="section-header-left">
-                <div className="eyebrow">01 · what&apos;s on offer</div>
-                <h2 className="h-section">Everything a <em>Bangalore dorm</em> needs.</h2>
+                <div className="eyebrow">01 · shop by category</div>
+                <h2 className="h-section">
+                  Browse by what you <span style={{ color: 'var(--saffron)', fontStyle: 'italic' }}>need.</span>
+                </h2>
+                <p className="h-sub mt-2 max-w-[52ch]">
+                  Five ways in — every listing is verified, graded, and ready for a campus meet-up. Tap a tab, then dive into live inventory.
+                </p>
               </div>
-              <Link href="/browse" className="inline-flex items-center gap-2 px-[18px] py-2.5 rounded-full text-[13px] font-medium bg-transparent text-[var(--ink)] border-[0.5px] border-[var(--line-strong)] transition-all duration-200 no-underline hover:bg-[var(--ink)] hover:text-[var(--bg)] hover:border-[var(--ink)]">View all categories →</Link>
+              <Link href="/browse" className="inline-flex items-center gap-2 px-[18px] py-2.5 rounded-full text-[13px] font-medium bg-transparent text-[var(--ink)] border-[0.5px] border-[var(--line-strong)] transition-all duration-200 no-underline hover:bg-[var(--ink)] hover:text-[var(--bg)] hover:border-[var(--ink)]">View all 482 →</Link>
+            </div>
+
+            <div className="ag-cat-tabs">
+              <Link href="/browse?category=laptops" className="ag-cat-tab ag-active">
+                <span className="ag-tab-n">01 / 05</span>
+                <span>Laptops</span>
+                <span className="ag-tab-count">214 in stock</span>
+              </Link>
+              <Link href="/browse?category=phones" className="ag-cat-tab">
+                <span className="ag-tab-n">02 / 05</span>
+                <span>Phones</span>
+                <span className="ag-tab-count">98 in stock</span>
+              </Link>
+              <Link href="/browse?category=monitors" className="ag-cat-tab">
+                <span className="ag-tab-n">03 / 05</span>
+                <span>Monitors</span>
+                <span className="ag-tab-count">64 in stock</span>
+              </Link>
+              <Link href="/browse?category=audio" className="ag-cat-tab">
+                <span className="ag-tab-n">04 / 05</span>
+                <span>Audio</span>
+                <span className="ag-tab-count">52 in stock</span>
+              </Link>
+              <Link href="/browse?category=keyboards" className="ag-cat-tab">
+                <span className="ag-tab-n">05 / 05</span>
+                <span>Peripherals</span>
+                <span className="ag-tab-count">67 in stock</span>
+              </Link>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -395,7 +388,7 @@ export default function HomePage() {
             <div className="cta-block">
               <div className="relative z-[2]">
                 <h2 className="font-serif font-light text-[clamp(36px,5vw,68px)] leading-[1] tracking-[-0.03em] text-[var(--cta-text)]">
-                  Got tech<br/>collecting dust?<br/><em className="italic text-[#FBB24A] font-normal">Let it earn.</em>
+                  Got tech<br/>collecting dust?<br/><em className="italic text-[var(--saffron-2)] font-normal">Let it earn.</em>
                 </h2>
                 <p className="text-[rgba(250,250,250,0.75)] text-base mt-5 max-w-[44ch] leading-[1.55]">
                   {isAdmin
