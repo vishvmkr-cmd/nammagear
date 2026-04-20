@@ -4,20 +4,27 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { API_URL } from './api-url';
 
 async function readAuthError(res: Response): Promise<string> {
+  const raw = await res.text();
+  let body: Record<string, unknown> | null = null;
   try {
-    const body = await res.json();
-    if (body?.error === 'Validation failed' && Array.isArray(body.details)) {
-      const first = body.details[0];
-      if (first?.path?.length && first?.message) {
-        return `${String(first.path[0])}: ${first.message}`;
-      }
-      return first?.message || body.error;
-    }
-    if (typeof body?.error === 'string') return body.error;
-    if (typeof body?.message === 'string') return body.message;
+    body = raw ? (JSON.parse(raw) as Record<string, unknown>) : null;
   } catch {
-    /* non-JSON body */
+    if (res.status >= 500 || res.status === 502 || res.status === 503) {
+      return 'Cannot reach the backend API (or it crashed). From the project root run: pnpm dev — or in a second terminal: pnpm dev:api (API must listen on port 4000).';
+    }
+    return `Request failed (${res.status})`;
   }
+  if (!body) return `Request failed (${res.status})`;
+
+  if (body.error === 'Validation failed' && Array.isArray(body.details)) {
+    const first = body.details[0] as { path?: unknown[]; message?: string };
+    if (first?.path?.length && first?.message) {
+      return `${String(first.path[0])}: ${first.message}`;
+    }
+    return first?.message || String(body.error);
+  }
+  if (typeof body.error === 'string') return body.error;
+  if (typeof body.message === 'string') return body.message;
   return `Request failed (${res.status})`;
 }
 
