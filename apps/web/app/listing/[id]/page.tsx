@@ -5,10 +5,10 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Nav } from '@/components/nav';
 import { Button } from '@/components/ui/button';
-import { useListing, useListingContact, useCreateOrder } from '@/lib/api';
+import { useListing, useListingContact, useCart, useAddToCart } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { formatPrice, formatTimeAgo, getConditionLabel } from '@/lib/utils';
-import { MapPin, Eye, Heart, ExternalLink, MessageCircle, ShoppingCart, Shield } from 'lucide-react';
+import { MapPin, Eye, MessageCircle, ShoppingCart, Shield } from 'lucide-react';
 
 export default function ListingDetailPage() {
   const params = useParams();
@@ -16,13 +16,16 @@ export default function ListingDetailPage() {
   const { data: listing, isLoading } = useListing(params?.id as string);
   const { refetch: getContact } = useListingContact(params?.id as string);
   const { data: authData } = useAuth();
-  const createOrder = useCreateOrder();
+  const { data: cartData } = useCart(!!authData?.user);
+  const addToCart = useAddToCart();
   const [activeImage, setActiveImage] = useState(0);
   const [showContact, setShowContact] = useState(false);
   const [contact, setContact] = useState<{ phone: string; whatsappUrl: string } | null>(null);
   const [contactError, setContactError] = useState('');
-  const [orderSuccess, setOrderSuccess] = useState(false);
-  const [orderError, setOrderError] = useState('');
+  const [cartError, setCartError] = useState('');
+  const [cartAdded, setCartAdded] = useState(false);
+
+  const inCart = cartData?.items?.some((c) => c.listingId === listing?.id) ?? false;
 
   const handleContactClick = async () => {
     setContactError('');
@@ -185,43 +188,69 @@ export default function ListingDetailPage() {
                       )}
                     </div>
                     <div className="text-xs text-muted mt-[3px]">
-                      Member since {new Date(listing.user.createdAt).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })} · {listing.user.totalSales} listings · ★ {listing.user.rating.toFixed(1)}
+                      Member since{' '}
+                      {listing.user.createdAt
+                        ? new Date(listing.user.createdAt).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
+                        : '—'}{' '}
+                      · {listing.user.totalSales} listings · ★ {listing.user.rating.toFixed(1)}
                     </div>
                   </div>
                 </div>
 
                 <Button
                   onClick={async () => {
-                    setOrderError('');
+                    setCartError('');
+                    setCartAdded(false);
                     if (!authData?.user) {
                       router.push('/auth/signin?redirect=' + encodeURIComponent(`/listing/${params?.id}`));
                       return;
                     }
+                    if (inCart) {
+                      router.push('/cart');
+                      return;
+                    }
                     try {
-                      await createOrder.mutateAsync({ listingId: listing.id });
-                      setOrderSuccess(true);
+                      await addToCart.mutateAsync(listing.id);
+                      setCartAdded(true);
                     } catch (err: unknown) {
-                      setOrderError(err instanceof Error ? err.message : 'Failed to place order');
+                      setCartError(err instanceof Error ? err.message : 'Failed to add to cart');
                     }
                   }}
                   variant="forest"
                   size="lg"
                   className="w-full justify-center mb-2.5"
-                  disabled={createOrder.isPending || orderSuccess || listing.status !== 'ACTIVE'}
+                  disabled={addToCart.isPending || listing.status !== 'ACTIVE'}
                 >
                   <ShoppingCart className="w-[18px] h-[18px]" />
-                  {createOrder.isPending ? 'Processing...' : orderSuccess ? 'Order Placed!' : listing.status !== 'ACTIVE' ? 'Not Available' : 'Buy Now'}
+                  {addToCart.isPending
+                    ? 'Adding...'
+                    : listing.status !== 'ACTIVE'
+                      ? 'Not Available'
+                      : inCart
+                        ? 'View cart'
+                        : 'Add to cart'}
                 </Button>
 
-                {orderSuccess && (
+                {cartAdded && listing.status === 'ACTIVE' && (
                   <div className="mb-2.5 p-3 bg-forest-soft border border-forest/20 rounded-xl text-sm text-forest-text text-center">
-                    Order confirmed! 1-year service support is now active. <a href="/my-orders" className="underline font-medium">View your orders &rarr;</a>
+                    Added to your cart.{' '}
+                    <Link href="/cart" className="underline font-medium">
+                      View cart →
+                    </Link>
                   </div>
                 )}
+                {inCart && !cartAdded && listing.status === 'ACTIVE' && (
+                  <p className="mb-2.5 text-xs text-center text-muted">
+                    Already in your cart —{' '}
+                    <Link href="/cart" className="text-forest-text underline font-medium">
+                      open cart
+                    </Link>
+                  </p>
+                )}
 
-                {orderError && (
+                {cartError && (
                   <div className="mb-2.5 p-3 bg-rose-soft border border-rose/20 rounded-xl text-sm text-rose text-center">
-                    {orderError}
+                    {cartError}
                   </div>
                 )}
 

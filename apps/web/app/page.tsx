@@ -19,25 +19,22 @@ export default function HomePage() {
           <div className="wrap-wide relative z-[2]">
             <div className="ag-kicker fade-up">
               <span className="ag-live" />
-              <span>
-                <em>Live</em>
-                {' · '}47 new listings this week
-                {' · '}
-                <em>Bangalore</em>
+              <span className="ag-kicker-text">
+                Live · 47 new laptops this week · Bangalore
               </span>
             </div>
 
             <h1 className="ag-display fade-up delay-1">
-              <span className="ag-line1">Pre-loved</span>
+              <span className="ag-line1">Premium</span>
               <span className="ag-line2">Laptops &amp;</span>
-              <span className="ag-line3">Gear.</span>
+              <span className="ag-line3">Tech.</span>
             </h1>
 
             <div className="ag-hero-grid fade-up delay-2">
               <div>
-                <p className="ag-mono-blurb">
-                  Hand-picked laptops, phones, and accessories from verified students. College-email checks.
-                  Pincode-locked to Bangalore. Direct WhatsApp with sellers — meet on campus, stay safe.
+                <p className="ag-hero-blurb">
+                  Hand-picked refurbished and new laptops, mobiles, and accessories. 6-month doorstep service on
+                  supported refurbs. Free meet-ups across Bangalore pin codes. EMI-friendly pricing on select gear.
                 </p>
                 <div className="ag-hero-actions">
                   <Link href="/browse?category=laptops" className="ag-btn-solid">
@@ -50,23 +47,23 @@ export default function HomePage() {
               </div>
               <div className="ag-stat-panel">
                 <h3>
-                  <span aria-hidden>→</span> Today&apos;s pulse
+                  <span aria-hidden>—</span> Today&apos;s stock
                 </h3>
                 <div className="ag-stat-row">
-                  <span>Laptops listed</span>
+                  <span>Laptops in stock</span>
                   <span>214</span>
                 </div>
                 <div className="ag-stat-row">
-                  <span>Phones listed</span>
+                  <span>Mobiles in stock</span>
                   <span>98</span>
                 </div>
                 <div className="ag-stat-row">
                   <span>Starting from</span>
-                  <span className="ag-price">₹8,500</span>
+                  <span className="ag-price">₹8,500 <span className="ag-stat-arrow" aria-hidden>↓</span></span>
                 </div>
                 <div className="ag-stat-row">
-                  <span>Avg. response</span>
-                  <span>&lt; 10 min</span>
+                  <span>Avg delivery</span>
+                  <span>24 hrs</span>
                 </div>
               </div>
             </div>
@@ -210,61 +207,163 @@ export default function HomePage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {/* Listing 1 */}
-              <div className="listing just-listed">
-                <div className="listing-img warm"><span className="corner-tag a">Grade A</span>
+              <Link href="/browse" className="listing listing--ag just-listed">
+                <div className="listing-img warm">
+                  <span className="listing-badge listing-badge--primary">Just in</span>
+                  <span className="listing-badge listing-badge--accent listing-badge--tr">Featured</span>
                   <svg width="120" height="120" viewBox="0 0 100 100" fill="none"><rect x="8" y="22" width="84" height="50" rx="3" fill="#2A2823"/><rect x="12" y="26" width="76" height="42" rx="1" fill="#4A5C5A"/><rect x="14" y="28" width="72" height="38" rx="1" fill="#6B7D7B" opacity="0.7"/><path d="M3 72h94l-5 8H8z" fill="#1A1815"/><rect x="44" y="72" width="12" height="3" fill="#0D0B09"/></svg>
                 </div>
-                <div className="listing-body"><div className="listing-title">Dell Latitude 5420</div><div className="listing-subtitle">i5-11th gen · 8GB · 256GB SSD</div><div className="listing-price-row"><span className="listing-price">₹24,500</span></div><div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>HSR Layout · 2h ago<span className="verified-mini">Verified</span></div></div>
-              </div>
+                <div className="listing-body">
+                  <div className="listing-cat">→ LAPTOP · BUSINESS</div>
+                  <div className="listing-title">Dell Latitude 5420</div>
+                  <div className="listing-subtitle">i5-11th · 8GB RAM · 256GB SSD · 14&quot;</div>
+                  <div className="listing-price-row">
+                    <div className="listing-price-col">
+                      <span className="listing-price">₹24,500</span>
+                      <span className="listing-msrp">₹38,000</span>
+                    </div>
+                    <span className="listing-view">VIEW →</span>
+                  </div>
+                  <div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>HSR Layout · 2h ago<span className="verified-mini">Verified</span></div>
+                </div>
+              </Link>
               {/* Listing 2 */}
-              <div className="listing">
-                <div className="listing-img sage"><span className="corner-tag a">Grade A</span>
+              <Link href="/browse" className="listing listing--ag">
+                <div className="listing-img sage">
+                  <span className="listing-badge listing-badge--accent listing-badge--tr">Featured</span>
                   <svg width="120" height="120" viewBox="0 0 100 100" fill="none"><rect x="6" y="18" width="88" height="52" rx="2" fill="#2A322A"/><rect x="10" y="22" width="80" height="44" rx="1" fill="#4A5548"/><rect x="12" y="24" width="76" height="40" rx="1" fill="#607058" opacity="0.6"/><rect x="40" y="70" width="20" height="16" fill="#2A322A"/><rect x="28" y="86" width="44" height="5" rx="1" fill="#1D251D"/></svg>
                 </div>
-                <div className="listing-body"><div className="listing-title">Dell UltraSharp U2419H</div><div className="listing-subtitle">24&quot; IPS · height-adjustable</div><div className="listing-price-row"><span className="listing-price">₹6,800</span></div><div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>Koramangala · 5h<span className="verified-mini">Verified</span></div></div>
-              </div>
+                <div className="listing-body">
+                  <div className="listing-cat">→ DISPLAY · PRO</div>
+                  <div className="listing-title">Dell UltraSharp U2419H</div>
+                  <div className="listing-subtitle">24&quot; IPS · 99% sRGB · height-adjust</div>
+                  <div className="listing-price-row">
+                    <div className="listing-price-col">
+                      <span className="listing-price">₹6,800</span>
+                      <span className="listing-msrp">₹11,200</span>
+                    </div>
+                    <span className="listing-view">VIEW →</span>
+                  </div>
+                  <div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>Koramangala · 5h<span className="verified-mini">Verified</span></div>
+                </div>
+              </Link>
               {/* Listing 3 */}
-              <div className="listing">
-                <div className="listing-img slate"><span className="corner-tag b">Grade B</span>
+              <Link href="/browse" className="listing listing--ag">
+                <div className="listing-img slate">
+                  <span className="listing-badge listing-badge--primary">Just in</span>
                   <svg width="120" height="120" viewBox="0 0 100 100" fill="none"><rect x="6" y="30" width="88" height="40" rx="3" fill="#2A2823"/><rect x="10" y="34" width="80" height="32" rx="1" fill="#3A362F"/><g fill="#5A5348"><rect x="14" y="38" width="5" height="5" rx="0.5"/><rect x="21" y="38" width="5" height="5" rx="0.5"/><rect x="28" y="38" width="5" height="5" rx="0.5"/><rect x="35" y="38" width="5" height="5" rx="0.5"/><rect x="42" y="38" width="5" height="5" rx="0.5"/><rect x="49" y="38" width="5" height="5" rx="0.5"/><rect x="56" y="38" width="5" height="5" rx="0.5"/><rect x="63" y="38" width="5" height="5" rx="0.5"/><rect x="14" y="45" width="5" height="5" rx="0.5"/><rect x="21" y="45" width="5" height="5" rx="0.5"/><rect x="28" y="45" width="5" height="5" rx="0.5"/><rect x="35" y="45" width="5" height="5" rx="0.5"/><rect x="42" y="45" width="5" height="5" rx="0.5"/><rect x="49" y="45" width="5" height="5" rx="0.5"/><rect x="56" y="45" width="5" height="5" rx="0.5"/><rect x="63" y="45" width="5" height="5" rx="0.5"/><rect x="18" y="55" width="64" height="6" rx="0.5"/></g></svg>
                 </div>
-                <div className="listing-body"><div className="listing-title">Keychron K2 · brown</div><div className="listing-subtitle">mechanical · 84-key · RGB</div><div className="listing-price-row"><span className="listing-price">₹5,800</span><span className="listing-neg">negotiable</span></div><div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>Jayanagar · yesterday</div></div>
-              </div>
+                <div className="listing-body">
+                  <div className="listing-cat">→ PERIPHERAL · MECH</div>
+                  <div className="listing-title">Keychron K2 · brown</div>
+                  <div className="listing-subtitle">84-key · Gateron brown · RGB</div>
+                  <div className="listing-price-row">
+                    <div className="listing-price-col">
+                      <span className="listing-price">₹5,800</span>
+                      <span className="listing-msrp">₹8,999</span>
+                    </div>
+                    <span className="listing-view">VIEW →</span>
+                  </div>
+                  <div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>Jayanagar · yesterday · <span className="listing-neg">negotiable</span></div>
+                </div>
+              </Link>
               {/* Listing 4 */}
-              <div className="listing just-listed">
-                <div className="listing-img terra"><span className="corner-tag a">Grade A</span>
+              <Link href="/browse" className="listing listing--ag just-listed">
+                <div className="listing-img terra">
+                  <span className="listing-badge listing-badge--primary">Just in</span>
+                  <span className="listing-badge listing-badge--accent listing-badge--tr">Featured</span>
                   <svg width="110" height="110" viewBox="0 0 100 100" fill="none"><rect x="28" y="8" width="44" height="84" rx="7" fill="#2A2823"/><rect x="32" y="12" width="36" height="76" rx="2" fill="#D9C8AF"/><rect x="34" y="14" width="32" height="72" rx="1" fill="#E8D9BE" opacity="0.6"/><circle cx="50" cy="89" r="1.5" fill="#5A4A33"/></svg>
                 </div>
-                <div className="listing-body"><div className="listing-title">iPad Air 4 · 64GB WiFi</div><div className="listing-subtitle">Space Grey · w/ Apple Pencil</div><div className="listing-price-row"><span className="listing-price">₹32,000</span></div><div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>Indiranagar · 3h<span className="verified-mini">Verified</span></div></div>
-              </div>
+                <div className="listing-body">
+                  <div className="listing-cat">→ TABLET · APPLE</div>
+                  <div className="listing-title">iPad Air 4 · 64GB WiFi</div>
+                  <div className="listing-subtitle">Space Grey · Apple Pencil included</div>
+                  <div className="listing-price-row">
+                    <div className="listing-price-col">
+                      <span className="listing-price">₹32,000</span>
+                      <span className="listing-msrp">₹44,900</span>
+                    </div>
+                    <span className="listing-view">VIEW →</span>
+                  </div>
+                  <div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>Indiranagar · 3h<span className="verified-mini">Verified</span></div>
+                </div>
+              </Link>
               {/* Listing 5 */}
-              <div className="listing">
-                <div className="listing-img warm"><span className="corner-tag a">Grade A</span>
+              <Link href="/browse" className="listing listing--ag">
+                <div className="listing-img warm">
                   <svg width="120" height="120" viewBox="0 0 100 100" fill="none"><rect x="8" y="22" width="84" height="50" rx="3" fill="#1A1815"/><rect x="12" y="26" width="76" height="42" rx="1" fill="#2A2824"/><rect x="14" y="28" width="72" height="38" rx="1" fill="#3A3632" opacity="0.9"/><path d="M3 72h94l-5 8H8z" fill="#0D0B09"/><rect x="44" y="72" width="12" height="3" fill="#000"/><circle cx="50" cy="36" r="4" fill="#C0261D" opacity="0.6"/></svg>
                 </div>
-                <div className="listing-body"><div className="listing-title">Lenovo ThinkPad T480</div><div className="listing-subtitle">i7-8th · 16GB · 512GB SSD</div><div className="listing-price-row"><span className="listing-price">₹22,000</span><span className="listing-neg">negotiable</span></div><div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>Electronic City · 6h</div></div>
-              </div>
+                <div className="listing-body">
+                  <div className="listing-cat">→ LAPTOP · WORKSTATION</div>
+                  <div className="listing-title">Lenovo ThinkPad T480</div>
+                  <div className="listing-subtitle">i7-8th · 16GB RAM · 512GB SSD · 14&quot;</div>
+                  <div className="listing-price-row">
+                    <div className="listing-price-col">
+                      <span className="listing-price">₹22,000</span>
+                    </div>
+                    <span className="listing-view">VIEW →</span>
+                  </div>
+                  <div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>Electronic City · 6h · <span className="listing-neg">negotiable</span></div>
+                </div>
+              </Link>
               {/* Listing 6 */}
-              <div className="listing">
-                <div className="listing-img slate"><span className="corner-tag b">Grade B</span>
+              <Link href="/browse" className="listing listing--ag">
+                <div className="listing-img slate">
+                  <span className="listing-badge listing-badge--accent listing-badge--tr">Featured</span>
                   <svg width="100" height="100" viewBox="0 0 100 100" fill="none"><ellipse cx="50" cy="52" rx="26" ry="36" fill="#2A2823"/><ellipse cx="50" cy="50" rx="22" ry="32" fill="#3A362F" opacity="0.85"/><circle cx="50" cy="46" r="4" fill="#5A5348"/><path d="M32 32 Q35 22 48 22" stroke="#1A1815" strokeWidth="2" fill="none"/></svg>
                 </div>
-                <div className="listing-body"><div className="listing-title">Logitech MX Master 3</div><div className="listing-subtitle">graphite · with charger</div><div className="listing-price-row"><span className="listing-price">₹4,500</span></div><div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>Marathahalli · 1d</div></div>
-              </div>
+                <div className="listing-body">
+                  <div className="listing-cat">→ MOUSE · PRO</div>
+                  <div className="listing-title">Logitech MX Master 3</div>
+                  <div className="listing-subtitle">Graphite · USB-C · charging cable</div>
+                  <div className="listing-price-row">
+                    <div className="listing-price-col">
+                      <span className="listing-price">₹4,500</span>
+                      <span className="listing-msrp">₹7,295</span>
+                    </div>
+                    <span className="listing-view">VIEW →</span>
+                  </div>
+                  <div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>Marathahalli · 1d</div>
+                </div>
+              </Link>
               {/* Listing 7 */}
-              <div className="listing just-listed">
-                <div className="listing-img terra"><span className="corner-tag a">Grade A</span>
+              <Link href="/browse" className="listing listing--ag just-listed">
+                <div className="listing-img terra">
+                  <span className="listing-badge listing-badge--primary">Just in</span>
                   <svg width="110" height="110" viewBox="0 0 100 100" fill="none"><ellipse cx="28" cy="64" rx="8" ry="10" fill="#F5F3EE"/><ellipse cx="72" cy="58" rx="8" ry="10" fill="#F5F3EE"/><path d="M28 54 Q28 42 35 26 L65 22 Q72 42 72 48" fill="#F5F3EE"/><rect x="24" y="68" width="8" height="8" rx="1" fill="#D9C8AF"/><rect x="68" y="62" width="8" height="8" rx="1" fill="#D9C8AF"/></svg>
                 </div>
-                <div className="listing-body"><div className="listing-title">AirPods Pro 2nd gen</div><div className="listing-subtitle">USB-C · 8 months old</div><div className="listing-price-row"><span className="listing-price">₹14,500</span></div><div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>BTM Layout · 2h<span className="verified-mini">Verified</span></div></div>
-              </div>
+                <div className="listing-body">
+                  <div className="listing-cat">→ AUDIO · TRUE WIRELESS</div>
+                  <div className="listing-title">AirPods Pro 2nd gen</div>
+                  <div className="listing-subtitle">USB-C case · 8 months · Grade A</div>
+                  <div className="listing-price-row">
+                    <div className="listing-price-col">
+                      <span className="listing-price">₹14,500</span>
+                      <span className="listing-msrp">₹24,900</span>
+                    </div>
+                    <span className="listing-view">VIEW →</span>
+                  </div>
+                  <div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>BTM Layout · 2h<span className="verified-mini">Verified</span></div>
+                </div>
+              </Link>
               {/* Listing 8 */}
-              <div className="listing">
-                <div className="listing-img sage"><span className="corner-tag a">Grade A</span>
+              <Link href="/browse" className="listing listing--ag">
+                <div className="listing-img sage">
                   <svg width="100" height="100" viewBox="0 0 100 100" fill="none"><rect x="30" y="8" width="40" height="76" rx="3" fill="#2A322A"/><rect x="34" y="12" width="32" height="68" rx="1" fill="#4A5548"/><circle cx="50" cy="78" r="2" fill="#1D251D"/><rect x="24" y="82" width="52" height="8" rx="2" fill="#1D251D"/></svg>
                 </div>
-                <div className="listing-body"><div className="listing-title">Dell OptiPlex 3070</div><div className="listing-subtitle">i5-9th · 16GB · 512GB</div><div className="listing-price-row"><span className="listing-price">₹18,000</span><span className="listing-neg">negotiable</span></div><div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>Whitefield · 4h</div></div>
-              </div>
+                <div className="listing-body">
+                  <div className="listing-cat">→ DESKTOP · SFF</div>
+                  <div className="listing-title">Dell OptiPlex 3070</div>
+                  <div className="listing-subtitle">i5-9th · 16GB · 512GB SSD</div>
+                  <div className="listing-price-row">
+                    <div className="listing-price-col">
+                      <span className="listing-price">₹18,000</span>
+                    </div>
+                    <span className="listing-view">VIEW →</span>
+                  </div>
+                  <div className="listing-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s-8-7.5-8-13a8 8 0 1 1 16 0c0 5.5-8 13-8 13z"/></svg>Whitefield · 4h · <span className="listing-neg">negotiable</span></div>
+                </div>
+              </Link>
             </div>
           </div>
         </section>

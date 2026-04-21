@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from './theme-provider';
 import { useAuth, useLogout } from '@/lib/auth';
+import { useCart } from '@/lib/api';
 
 interface NavItem {
   label: string;
@@ -296,6 +297,7 @@ export function Nav() {
   const { data: authData, isLoading } = useAuth();
   const logout = useLogout();
   const user = authData?.user;
+  const { data: cartData } = useCart(!!user);
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -313,7 +315,7 @@ export function Nav() {
       {/* ─── Row 1: Logo · Center pill · Actions ─── */}
       <div style={{ borderBottom: '1px solid var(--line)', position: 'relative' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', height: 56, gap: 16, position: 'relative' }}>
+          <div className="ag-nav-row">
 
             {/* Logo */}
             <Link href="/" className="ag-nav-logo">
@@ -330,7 +332,7 @@ export function Nav() {
             </div>
 
             {/* Top right: theme · account · Sell · Sign in */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 'auto' }}>
+            <div className="ag-nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
               <button
                 onClick={toggleTheme}
                 title="Toggle theme"
@@ -346,14 +348,51 @@ export function Nav() {
 
               {!isLoading && user && (
                 <>
-                  <Link href="/my-orders" title="My Orders"
+                  <Link
+                    href="/cart"
+                    title="Cart"
                     style={{
-                      width: 36, height: 36, borderRadius: '50%',
-                      border: '1px solid var(--line)', background: 'var(--bg-elevated)',
-                      color: 'var(--ink-soft)', display: 'inline-flex',
-                      alignItems: 'center', justifyContent: 'center', textDecoration: 'none',
-                    }}>
+                      position: 'relative',
+                      width: 36,
+                      height: 36,
+                      borderRadius: '50%',
+                      border: '1px solid var(--line)',
+                      background: 'var(--bg-elevated)',
+                      color: 'var(--ink-soft)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      textDecoration: 'none',
+                    }}
+                  >
                     <ShoppingCart size={15} />
+                    {(() => {
+                      const n = cartData?.items?.length ?? 0;
+                      if (n < 1) return null;
+                      return (
+                        <span
+                          style={{
+                            position: 'absolute',
+                            top: -2,
+                            right: -2,
+                            minWidth: 17,
+                            height: 17,
+                            borderRadius: 999,
+                            background: 'var(--saffron)',
+                            color: '#fff',
+                            fontSize: 10,
+                            fontWeight: 700,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '0 4px',
+                            lineHeight: 1,
+                          }}
+                        >
+                          {n > 9 ? '9+' : n}
+                        </span>
+                      );
+                    })()}
                   </Link>
                   <Link href="/profile" title={user.name}
                     style={{
@@ -484,6 +523,53 @@ export function Nav() {
                 )}
               </div>
             ))}
+            {user && (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 4,
+                  marginTop: 12,
+                  paddingTop: 12,
+                  borderTop: '1px solid var(--line)',
+                }}
+              >
+                <Link
+                  href="/cart"
+                  onClick={() => setMobileOpen(false)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '12px 0',
+                    fontSize: 15,
+                    fontWeight: 600,
+                    color: 'var(--ink)',
+                    textDecoration: 'none',
+                  }}
+                >
+                  <span>Cart</span>
+                  {(cartData?.items?.length ?? 0) > 0 && (
+                    <span style={{ fontSize: 12, color: 'var(--saffron-text)' }}>
+                      {cartData?.items?.length} items
+                    </span>
+                  )}
+                </Link>
+                <Link
+                  href="/my-orders"
+                  onClick={() => setMobileOpen(false)}
+                  style={{
+                    display: 'block',
+                    padding: '10px 0',
+                    fontSize: 14,
+                    color: 'var(--muted)',
+                    textDecoration: 'none',
+                  }}
+                >
+                  My orders
+                </Link>
+              </div>
+            )}
             <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {!isLoading && !user && (
                 <Link href="/auth/signin" onClick={() => setMobileOpen(false)}

@@ -14,12 +14,17 @@ import categoryRoutes from './routes/categories.js';
 import orderRoutes from './routes/orders.js';
 import serviceTicketRoutes from './routes/service-tickets.js';
 import adminRoutes from './routes/admin.js';
+import cartRoutes from './routes/cart.js';
 
 export function createServer() {
   const app = express();
 
   app.use(helmet());
-  const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
+  const corsRaw = process.env.CORS_ORIGIN || 'http://localhost:3000';
+  const corsOrigin =
+    corsRaw.includes(',')
+      ? corsRaw.split(',').map((s) => s.trim()).filter(Boolean)
+      : corsRaw;
   app.use(cors({
     origin: corsOrigin,
     credentials: true,
@@ -44,6 +49,7 @@ export function createServer() {
   app.use('/api/orders', orderRoutes);
   app.use('/api/service-tickets', serviceTicketRoutes);
   app.use('/api/admin', adminRoutes);
+  app.use('/api/cart', cartRoutes);
 
   app.use(errorHandler);
 

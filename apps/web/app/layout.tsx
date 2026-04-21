@@ -3,7 +3,10 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { ThemeProvider } from "@/components/theme-provider";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Student Gear Shop · Bangalore's student tech marketplace",
   description: "Pre-loved tech, campus to campus. Fair prices. Pincode-locked. Zero resellers, zero scams.",
 };

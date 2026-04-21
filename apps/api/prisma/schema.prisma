@@ -31,6 +31,7 @@ model User {
 
   listings       Listing[]
   saves          Save[]
+  cartItems      CartItem[]
   reports        Report[]  @relation("Reporter")
   orders         Order[]   @relation("Buyer")
   serviceTickets ServiceTicket[]
@@ -80,6 +81,7 @@ model Listing {
 
   images      ListingImage[]
   saves       Save[]
+  cartItems   CartItem[]
   reports     Report[]
   orders      Order[]
 
@@ -105,6 +107,18 @@ model Save {
   createdAt  DateTime @default(now())
 
   @@unique([userId, listingId])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, listingId])
+  @@index([userId])
 }
 
 model Report {

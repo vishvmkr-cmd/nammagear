@@ -26,7 +26,7 @@ export interface Listing {
     name: string;
     rating: number;
     totalSales: number;
-    createdAt: string;
+    createdAt?: string;
     college?: string;
     verifiedAt?: string;
   };
@@ -254,6 +254,101 @@ export function useCategories() {
         throw new Error(error.error || 'Failed to fetch categories');
       }
       return res.json();
+    },
+  });
+}
+
+// ─── Cart (server-backed, per logged-in user) ────────────────────────
+
+export interface CartItem {
+  id: string;
+  userId: string;
+  listingId: string;
+  createdAt: string;
+  listing: Listing;
+}
+
+export function useCart(enabled = true) {
+  return useQuery<{ items: CartItem[] }>({
+    queryKey: ['cart'],
+    queryFn: async () => {
+      const res = await fetch(`${API_URL}/cart`, {
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error((error as { error?: string }).error || 'Failed to fetch cart');
+      }
+      return res.json();
+    },
+    enabled,
+  });
+}
+
+export function useAddToCart() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (listingId: string) => {
+      const res = await fetch(`${API_URL}/cart`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ listingId }),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to add to cart');
+      }
+      return res.json() as Promise<{ items: CartItem[] }>;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+    },
+  });
+}
+
+export function useRemoveFromCart() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (listingId: string) => {
+      const res = await fetch(`${API_URL}/cart/${encodeURIComponent(listingId)}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to remove');
+      }
+      return res.json() as Promise<{ items: CartItem[] }>;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+    },
+  });
+}
+
+export function useCheckoutCart() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`${API_URL}/cart/checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Checkout failed');
+      }
+      return res.json() as Promise<{ orders: unknown[] }>;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
     },
   });
 }
