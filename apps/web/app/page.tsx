@@ -33,8 +33,8 @@ export default function HomePage() {
             <div className="ag-hero-grid fade-up delay-2">
               <div>
                 <p className="ag-hero-blurb">
-                  Hand-picked refurbished and new laptops, mobiles, and accessories. 6-month doorstep service on
-                  supported refurbs. Free meet-ups across Bangalore pin codes. EMI-friendly pricing on select gear.
+                  Buy from verified student sellers with confidence. Every purchase includes 1-year free doorstep service. 
+                  Hand-picked refurbished and new laptops, mobiles, and accessories. Free meet-ups across Bangalore pin codes.
                 </p>
                 <div className="ag-hero-actions">
                   <Link href="/browse?category=laptops" className="ag-btn-solid">

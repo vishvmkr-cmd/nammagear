@@ -174,6 +174,89 @@ export default function ListingDetailPage() {
                   </div>
                 </div>
 
+                {/* Service Warranty Banner */}
+                <div className="flex items-start gap-3 p-4 border-[0.5px] border-saffron/30 rounded-[10px] mb-6 bg-saffron/5">
+                  <Shield className="w-5 h-5 text-saffron flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <div className="font-medium text-sm text-ink mb-1">1-Year Doorstep Service Included</div>
+                    <div className="text-xs text-muted leading-relaxed">
+                      Every purchase includes free doorstep service for 1 year. Contact our support team anytime for repairs, maintenance, or issues.
+                    </div>
+                  </div>
+                </div>
+
+                {/* Technical Specifications */}
+                {(listing.processor || listing.memory || listing.storage || listing.display || listing.graphics) && (
+                  <div className="mb-6">
+                    <h3 className="font-serif text-lg mb-4 text-ink">Technical Specifications</h3>
+                    <div className="grid gap-3">
+                      {listing.processor && (
+                        <div className="flex justify-between py-2.5 border-b-[0.5px] border-[var(--line)]">
+                          <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-muted">Processor</span>
+                          <span className="text-sm text-ink text-right">{listing.processor}</span>
+                        </div>
+                      )}
+                      {listing.memory && (
+                        <div className="flex justify-between py-2.5 border-b-[0.5px] border-[var(--line)]">
+                          <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-muted">Memory</span>
+                          <span className="text-sm text-ink text-right">{listing.memory}</span>
+                        </div>
+                      )}
+                      {listing.storage && (
+                        <div className="flex justify-between py-2.5 border-b-[0.5px] border-[var(--line)]">
+                          <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-muted">Storage</span>
+                          <span className="text-sm text-ink text-right">{listing.storage}</span>
+                        </div>
+                      )}
+                      {listing.display && (
+                        <div className="flex justify-between py-2.5 border-b-[0.5px] border-[var(--line)]">
+                          <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-muted">Display</span>
+                          <span className="text-sm text-ink text-right">{listing.display}</span>
+                        </div>
+                      )}
+                      {listing.graphics && (
+                        <div className="flex justify-between py-2.5 border-b-[0.5px] border-[var(--line)]">
+                          <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-muted">Graphics</span>
+                          <span className="text-sm text-ink text-right">{listing.graphics}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Warranty Information */}
+                {(listing.warrantyType || listing.warrantyPeriod) && (
+                  <div className="mb-6">
+                    <h3 className="font-serif text-lg mb-4 text-ink">Warranty Information</h3>
+                    <div className="grid gap-3">
+                      {listing.warrantyType && (
+                        <div className="flex justify-between py-2.5 border-b-[0.5px] border-[var(--line)]">
+                          <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-muted">Type</span>
+                          <span className="text-sm text-ink text-right">{listing.warrantyType}</span>
+                        </div>
+                      )}
+                      {listing.warrantyFrom && (
+                        <div className="flex justify-between py-2.5 border-b-[0.5px] border-[var(--line)]">
+                          <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-muted">From</span>
+                          <span className="text-sm text-ink text-right">{listing.warrantyFrom}</span>
+                        </div>
+                      )}
+                      {listing.warrantyPeriod && (
+                        <div className="flex justify-between py-2.5 border-b-[0.5px] border-[var(--line)]">
+                          <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-muted">Period</span>
+                          <span className="text-sm text-ink text-right">{listing.warrantyPeriod}</span>
+                        </div>
+                      )}
+                      {listing.warrantyDetails && (
+                        <div className="py-2.5">
+                          <div className="font-mono text-[10px] tracking-[0.14em] uppercase text-muted mb-2">Details</div>
+                          <div className="text-sm text-ink leading-relaxed">{listing.warrantyDetails}</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex items-center gap-3.5 p-4 border-[0.5px] border-[var(--line)] rounded-[10px] mb-4 bg-[var(--bg-muted)]">
                   <div className="w-11 h-11 rounded-full bg-forest text-white dark:text-[#0A0A0A] flex items-center justify-center font-serif text-[15px] flex-shrink-0 font-medium">
                     {listing.user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}

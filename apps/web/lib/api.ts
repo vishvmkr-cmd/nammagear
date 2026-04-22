@@ -16,6 +16,15 @@ export interface Listing {
   views: number;
   createdAt: string;
   updatedAt: string;
+  processor?: string;
+  memory?: string;
+  storage?: string;
+  display?: string;
+  graphics?: string;
+  warrantyType?: string;
+  warrantyFrom?: string;
+  warrantyPeriod?: string;
+  warrantyDetails?: string;
   category: {
     id: string;
     name: string;

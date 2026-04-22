@@ -79,6 +79,17 @@ model Listing {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
+  // Detailed specifications (for laptops/electronics)
+  processor   String?
+  memory      String?
+  storage     String?
+  display     String?
+  graphics    String?
+  warrantyType String?
+  warrantyFrom String?
+  warrantyPeriod String?
+  warrantyDetails String?
+
   images      ListingImage[]
   saves       Save[]
   cartItems   CartItem[]

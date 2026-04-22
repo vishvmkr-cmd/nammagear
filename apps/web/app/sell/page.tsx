@@ -77,6 +77,15 @@ export default function SellPage() {
     pincode: '',
     ageYears: '',
     hasBill: false,
+    processor: '',
+    memory: '',
+    storage: '',
+    display: '',
+    graphics: '',
+    warrantyType: '',
+    warrantyFrom: '',
+    warrantyPeriod: '',
+    warrantyDetails: '',
   });
   const [pincodeInfo, setPincodeInfo] = useState<string>('');
   const [error, setError] = useState('');
@@ -378,6 +387,113 @@ export default function SellPage() {
                   placeholder="Selling my Dell UltraSharp U2419H. No dead pixels, bill available. Can meet near Forum Mall or IIIT-B gate."
                   className="w-full px-[15px] py-3 border-[0.5px] border-[var(--line-strong)] rounded-[10px] font-sans text-sm bg-[var(--form-bg)] text-ink outline-none transition-colors focus:border-forest focus:bg-[var(--bg-elevated)] resize-none"
                 />
+              </div>
+
+              {/* Technical Specifications - Optional */}
+              <div className="mb-5.5 p-4 border-[0.5px] border-[var(--line)] rounded-[10px] bg-[var(--bg-muted)]">
+                <h3 className="font-serif text-base mb-3 text-ink">Technical Specifications (Optional)</h3>
+                <p className="text-xs text-muted mb-4">Add detailed specs for laptops/electronics</p>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="font-mono text-[9px] tracking-[0.14em] uppercase text-muted block mb-1.5">Processor</label>
+                    <input
+                      type="text"
+                      value={formData.processor}
+                      onChange={(e) => setFormData({ ...formData, processor: e.target.value })}
+                      placeholder="Intel Core i7-1365U"
+                      className="w-full px-3 py-2 border-[0.5px] border-[var(--line-strong)] rounded-lg font-sans text-xs bg-[var(--form-bg)] text-ink outline-none transition-colors focus:border-forest"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-mono text-[9px] tracking-[0.14em] uppercase text-muted block mb-1.5">Memory</label>
+                    <input
+                      type="text"
+                      value={formData.memory}
+                      onChange={(e) => setFormData({ ...formData, memory: e.target.value })}
+                      placeholder="32 GB LPDDR5X RAM"
+                      className="w-full px-3 py-2 border-[0.5px] border-[var(--line-strong)] rounded-lg font-sans text-xs bg-[var(--form-bg)] text-ink outline-none transition-colors focus:border-forest"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-mono text-[9px] tracking-[0.14em] uppercase text-muted block mb-1.5">Storage</label>
+                    <input
+                      type="text"
+                      value={formData.storage}
+                      onChange={(e) => setFormData({ ...formData, storage: e.target.value })}
+                      placeholder="512 GB NVMe SSD"
+                      className="w-full px-3 py-2 border-[0.5px] border-[var(--line-strong)] rounded-lg font-sans text-xs bg-[var(--form-bg)] text-ink outline-none transition-colors focus:border-forest"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-mono text-[9px] tracking-[0.14em] uppercase text-muted block mb-1.5">Display</label>
+                    <input
+                      type="text"
+                      value={formData.display}
+                      onChange={(e) => setFormData({ ...formData, display: e.target.value })}
+                      placeholder="13.3&quot; FHD, 300 nits"
+                      className="w-full px-3 py-2 border-[0.5px] border-[var(--line-strong)] rounded-lg font-sans text-xs bg-[var(--form-bg)] text-ink outline-none transition-colors focus:border-forest"
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="font-mono text-[9px] tracking-[0.14em] uppercase text-muted block mb-1.5">Graphics</label>
+                    <input
+                      type="text"
+                      value={formData.graphics}
+                      onChange={(e) => setFormData({ ...formData, graphics: e.target.value })}
+                      placeholder="Intel Iris Xe Graphics"
+                      className="w-full px-3 py-2 border-[0.5px] border-[var(--line-strong)] rounded-lg font-sans text-xs bg-[var(--form-bg)] text-ink outline-none transition-colors focus:border-forest"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Warranty Information - Optional */}
+              <div className="mb-5.5 p-4 border-[0.5px] border-[var(--line)] rounded-[10px] bg-[var(--bg-muted)]">
+                <h3 className="font-serif text-base mb-3 text-ink">Warranty Information (Optional)</h3>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="font-mono text-[9px] tracking-[0.14em] uppercase text-muted block mb-1.5">Type</label>
+                    <input
+                      type="text"
+                      value={formData.warrantyType}
+                      onChange={(e) => setFormData({ ...formData, warrantyType: e.target.value })}
+                      placeholder="Onsite"
+                      className="w-full px-3 py-2 border-[0.5px] border-[var(--line-strong)] rounded-lg font-sans text-xs bg-[var(--form-bg)] text-ink outline-none transition-colors focus:border-forest"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-mono text-[9px] tracking-[0.14em] uppercase text-muted block mb-1.5">From</label>
+                    <input
+                      type="text"
+                      value={formData.warrantyFrom}
+                      onChange={(e) => setFormData({ ...formData, warrantyFrom: e.target.value })}
+                      placeholder="OEM"
+                      className="w-full px-3 py-2 border-[0.5px] border-[var(--line-strong)] rounded-lg font-sans text-xs bg-[var(--form-bg)] text-ink outline-none transition-colors focus:border-forest"
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="font-mono text-[9px] tracking-[0.14em] uppercase text-muted block mb-1.5">Period</label>
+                    <input
+                      type="text"
+                      value={formData.warrantyPeriod}
+                      onChange={(e) => setFormData({ ...formData, warrantyPeriod: e.target.value })}
+                      placeholder="36 Months"
+                      className="w-full px-3 py-2 border-[0.5px] border-[var(--line-strong)] rounded-lg font-sans text-xs bg-[var(--form-bg)] text-ink outline-none transition-colors focus:border-forest"
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="font-mono text-[9px] tracking-[0.14em] uppercase text-muted block mb-1.5">Details</label>
+                    <textarea
+                      rows={2}
+                      value={formData.warrantyDetails}
+                      onChange={(e) => setFormData({ ...formData, warrantyDetails: e.target.value })}
+                      placeholder="3 Years Onsite With ADP Warranty"
+                      className="w-full px-3 py-2 border-[0.5px] border-[var(--line-strong)] rounded-lg font-sans text-xs bg-[var(--form-bg)] text-ink outline-none transition-colors focus:border-forest resize-none"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="mb-6">
