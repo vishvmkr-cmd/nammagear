@@ -47,7 +47,7 @@ function SignInForm() {
           {/* Header */}
           <div className="text-center mb-7">
             <h1 className="font-serif text-[28px] font-normal tracking-tight text-[var(--ink)]">
-              Welcome back
+              Welcome
             </h1>
             <p className="text-[14px] text-[var(--muted)] mt-1.5">
               Sign in to your Student Gear Shop account
