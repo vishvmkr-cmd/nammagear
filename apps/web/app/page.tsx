@@ -417,19 +417,19 @@ export default function HomePage() {
               <div className="section-header-left">
                 <div className="eyebrow muted-label">04 · how we&apos;re different</div>
                 <h2 className="h-section">Why <em>not just use OLX</em>?</h2>
-                <p>The existing options all trade off on something. Here&apos;s the honest comparison.</p>
+                <p>Curated by one trusted seller. No spam, no scams, no haggling with randoms.</p>
               </div>
             </div>
             <div className="compare-table">
-              <div className="compare-row header"><div>Feature</div><div>Student Gear Shop</div><div>OLX</div><div>Cashify</div><div>FB Marketplace</div></div>
-              <div className="compare-row namma"><div>Bangalore-only</div><div>✓</div><div className="compare-x">✕</div><div className="compare-x">✕</div><div className="compare-x">✕</div></div>
-              <div className="compare-row namma"><div>Student-verified sellers</div><div>✓</div><div className="compare-x">✕</div><div className="compare-x">✕</div><div className="compare-x">✕</div></div>
-              <div className="compare-row namma"><div>Condition grading (A / B / C)</div><div>✓</div><div className="compare-x">✕</div><div>✓</div><div className="compare-x">✕</div></div>
-              <div className="compare-row namma"><div>Peer-to-peer (no middleman)</div><div>✓</div><div>✓</div><div className="compare-x">✕</div><div>✓</div></div>
-              <div className="compare-row namma"><div>Direct WhatsApp chat</div><div>✓</div><div className="compare-dash">—</div><div className="compare-x">✕</div><div className="compare-dash">—</div></div>
-              <div className="compare-row namma"><div>Free to list</div><div>✓</div><div>✓</div><div>✓</div><div>✓</div></div>
-              <div className="compare-row namma"><div>Zero reseller spam</div><div>✓</div><div className="compare-x">✕</div><div className="compare-dash">n/a</div><div className="compare-x">✕</div></div>
-              <div className="compare-row namma"><div>Campus meet-up safe spots</div><div>✓</div><div className="compare-x">✕</div><div className="compare-x">✕</div><div className="compare-x">✕</div></div>
+              <div className="compare-row header"><div>Feature</div><div>Student Gear Shop</div><div>OLX</div><div>Cashify</div><div>Amazon Renewed</div></div>
+              <div className="compare-row namma"><div>Bangalore-only focus</div><div>✓</div><div className="compare-x">✕</div><div className="compare-x">✕</div><div className="compare-x">✕</div></div>
+              <div className="compare-row namma"><div>Single trusted seller</div><div>✓</div><div className="compare-x">✕</div><div>✓</div><div>✓</div></div>
+              <div className="compare-row namma"><div>Condition grading (A / B / C)</div><div>✓</div><div className="compare-x">✕</div><div>✓</div><div>✓</div></div>
+              <div className="compare-row namma"><div>Meet on campus</div><div>✓</div><div className="compare-dash">—</div><div className="compare-x">✕</div><div className="compare-x">✕</div></div>
+              <div className="compare-row namma"><div>Direct WhatsApp contact</div><div>✓</div><div className="compare-dash">—</div><div className="compare-x">✕</div><div className="compare-x">✕</div></div>
+              <div className="compare-row namma"><div>Student-focused pricing</div><div>✓</div><div className="compare-x">✕</div><div className="compare-dash">—</div><div className="compare-dash">—</div></div>
+              <div className="compare-row namma"><div>Zero reseller spam</div><div>✓</div><div className="compare-x">✕</div><div>✓</div><div>✓</div></div>
+              <div className="compare-row namma"><div>1-year service warranty</div><div>✓</div><div className="compare-x">✕</div><div>✓</div><div>✓</div></div>
             </div>
           </div>
         </section>
@@ -484,13 +484,13 @@ export default function HomePage() {
             <div className="eyebrow muted-label">09 · from the community</div>
             <div style={{ marginTop: '32px' }} />
             <p className="pull-quote">
-              Sold my monitor and old keyboard in <em>under three days</em>, both to students from PESU I could meet on campus. Felt safer than OLX and way faster than classifieds.&quot;
+              Found a pristine MacBook Air for <em>almost half the price</em> of a new one. The specs were accurate, condition was exactly as described, and pickup was smooth. No haggling with random sellers.&quot;
             </p>
             <div className="quote-attr">
-              <div className="avatar">SR</div>
+              <div className="avatar">AK</div>
               <div>
-                <em>Shreya R.</em> · 3rd year CS at RVCE
-                <div style={{ color: 'var(--muted)', fontSize: '12px', marginTop: '3px' }}>Koramangala · verified since Oct 2025</div>
+                <em>Aarav K.</em> · 2nd year MBA at IIMB
+                <div style={{ color: 'var(--muted)', fontSize: '12px', marginTop: '3px' }}>Koramangala · purchased Dec 2025</div>
               </div>
             </div>
           </div>
@@ -534,7 +534,7 @@ export default function HomePage() {
                 Namma<em className="italic font-normal text-[var(--forest-text)]">Gear</em>
               </div>
               <p className="text-[var(--muted)] text-sm mt-4 max-w-[36ch] leading-[1.55]">
-                Pre-loved tech, passed between Bangalore students. Local, verified, direct. Made with care in Koramangala.
+                Quality pre-owned tech, curated and verified. Trusted seller serving Bangalore students since 2024.
               </p>
               <div className="newsletter">
                 <input placeholder="your.name@college.edu.in" />
