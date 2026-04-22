@@ -37,6 +37,7 @@ services:
       dockerfile: deploy/Dockerfile.web
       args:
         API_PROXY_ORIGIN: http://api:4000
+        NEXT_PUBLIC_API_URL: https://microlynk.shop/api
     environment:
       API_PROXY_ORIGIN: http://api:4000
       NODE_ENV: production
