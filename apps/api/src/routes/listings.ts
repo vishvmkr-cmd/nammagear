@@ -25,7 +25,16 @@ const createListingSchema = z.object({
   pincode: z.string().length(6, 'Pincode must be 6 digits'),
   ageYears: z.number().optional(),
   hasBill: z.boolean(),
-  imageUrls: z.array(z.string().url()).min(1).max(5),
+  imageUrls: z.array(z.string().url()).max(5).optional().default([]),
+  processor: z.string().optional(),
+  memory: z.string().optional(),
+  storage: z.string().optional(),
+  display: z.string().optional(),
+  graphics: z.string().optional(),
+  warrantyType: z.string().optional(),
+  warrantyFrom: z.string().optional(),
+  warrantyPeriod: z.string().optional(),
+  warrantyDetails: z.string().optional(),
 });
 
 const updateListingSchema = z.object({
@@ -35,6 +44,20 @@ const updateListingSchema = z.object({
   negotiable: z.boolean().optional(),
   condition: z.enum(['A', 'B', 'C']).optional(),
   status: z.enum(['ACTIVE', 'SOLD', 'REMOVED']).optional(),
+  categoryId: z.string().optional(),
+  pincode: z.string().length(6).optional(),
+  ageYears: z.number().positive().optional(),
+  hasBill: z.boolean().optional(),
+  processor: z.string().optional(),
+  memory: z.string().optional(),
+  storage: z.string().optional(),
+  display: z.string().optional(),
+  graphics: z.string().optional(),
+  warrantyType: z.string().optional(),
+  warrantyFrom: z.string().optional(),
+  warrantyPeriod: z.string().optional(),
+  warrantyDetails: z.string().optional(),
+  imageUrls: z.array(z.string().url()).max(5).optional(),
 });
 
 router.post(

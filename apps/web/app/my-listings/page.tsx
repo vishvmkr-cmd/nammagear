@@ -135,6 +135,14 @@ export default function MyListingsPage() {
                   </Link>
                   {listing.status === 'ACTIVE' && (
                     <div className="px-[18px] pb-4 flex gap-2">
+                      <Link href={`/listing/${listing.id}/edit`} className="flex-1">
+                        <button
+                          className="w-full text-[11px] font-mono py-2 px-3 rounded-full border-[0.5px] border-[var(--line-strong)] text-ink-soft hover:bg-forest-soft hover:text-forest-text hover:border-forest transition-all"
+                        >
+                          <Edit2 className="w-3 h-3 inline mr-1" />
+                          Edit
+                        </button>
+                      </Link>
                       <button
                         onClick={() => handleMarkSold(listing.id)}
                         className="flex-1 text-[11px] font-mono py-2 px-3 rounded-full border-[0.5px] border-[var(--line-strong)] text-ink-soft hover:bg-saffron-soft hover:text-saffron-text hover:border-saffron transition-all"

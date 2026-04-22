@@ -14,6 +14,15 @@ export interface CreateListingData {
   ageYears?: number;
   hasBill: boolean;
   imageUrls: string[];
+  processor?: string;
+  memory?: string;
+  storage?: string;
+  display?: string;
+  graphics?: string;
+  warrantyType?: string;
+  warrantyFrom?: string;
+  warrantyPeriod?: string;
+  warrantyDetails?: string;
 }
 
 export interface UpdateListingData {
@@ -23,6 +32,20 @@ export interface UpdateListingData {
   negotiable?: boolean;
   condition?: Condition;
   status?: ListingStatus;
+  categoryId?: string;
+  pincode?: string;
+  ageYears?: number;
+  hasBill?: boolean;
+  processor?: string;
+  memory?: string;
+  storage?: string;
+  display?: string;
+  graphics?: string;
+  warrantyType?: string;
+  warrantyFrom?: string;
+  warrantyPeriod?: string;
+  warrantyDetails?: string;
+  imageUrls?: string[];
 }
 
 export interface ListingFilters {
@@ -39,10 +62,6 @@ export interface ListingFilters {
 export async function createListing(data: CreateListingData) {
   if (!isBangalorePincode(data.pincode)) {
     throw new Error('Only Bangalore pincodes (560001-560103) are allowed');
-  }
-
-  if (data.imageUrls.length === 0) {
-    throw new Error('At least one image is required');
   }
 
   if (data.imageUrls.length > 5) {
@@ -64,12 +83,21 @@ export async function createListing(data: CreateListingData) {
       area,
       ageYears: data.ageYears,
       hasBill: data.hasBill,
-      images: {
+      processor: data.processor,
+      memory: data.memory,
+      storage: data.storage,
+      display: data.display,
+      graphics: data.graphics,
+      warrantyType: data.warrantyType,
+      warrantyFrom: data.warrantyFrom,
+      warrantyPeriod: data.warrantyPeriod,
+      warrantyDetails: data.warrantyDetails,
+      images: data.imageUrls.length > 0 ? {
         create: data.imageUrls.map((url, index) => ({
           url,
           order: index,
         })),
-      },
+      } : undefined,
     },
     include: {
       images: true,
@@ -231,9 +259,23 @@ export async function updateListing(
     throw new Error('Unauthorized: You can only edit your own listings');
   }
 
+  const { imageUrls, pincode, ...updateData } = data;
+
+  // If pincode is provided, derive area
+  let area: string | undefined;
+  if (pincode) {
+    if (!isBangalorePincode(pincode)) {
+      throw new Error('Only Bangalore pincodes (560001-560103) are allowed');
+    }
+    area = PINCODE_TO_AREA[pincode] || 'Bangalore';
+  }
+
   const updated = await prisma.listing.update({
     where: { id },
-    data,
+    data: {
+      ...updateData,
+      ...(pincode && { pincode, area }),
+    },
     include: {
       images: true,
       category: true,
@@ -250,6 +292,47 @@ export async function updateListing(
       },
     },
   });
+
+  // Handle image updates if provided
+  if (imageUrls !== undefined) {
+    // Delete existing images
+    await prisma.listingImage.deleteMany({
+      where: { listingId: id },
+    });
+
+    // Create new images
+    if (imageUrls.length > 0) {
+      await prisma.listingImage.createMany({
+        data: imageUrls.map((url, index) => ({
+          listingId: id,
+          url,
+          order: index,
+        })),
+      });
+    }
+
+    // Fetch updated listing with new images
+    const refreshed = await prisma.listing.findUnique({
+      where: { id },
+      include: {
+        images: true,
+        category: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            college: true,
+            rating: true,
+            totalSales: true,
+            verifiedAt: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    return refreshed!;
+  }
 
   return updated;
 }

@@ -52,14 +52,15 @@ router.post(
 
       const isProduction = process.env.NODE_ENV === 'production';
       const cookieDomain = process.env.COOKIE_DOMAIN || 'localhost';
+      const useSecure = cookieDomain !== 'localhost';
 
       res.cookie('ng_token', token, {
         path: '/',
         httpOnly: true,
-        secure: isProduction,
+        secure: useSecure,
         sameSite: 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        domain: isProduction ? cookieDomain : undefined,
+        domain: cookieDomain,
       });
 
       res.status(201).json({ user });
@@ -83,14 +84,15 @@ router.post(
 
       const isProduction = process.env.NODE_ENV === 'production';
       const cookieDomain = process.env.COOKIE_DOMAIN || 'localhost';
+      const useSecure = cookieDomain !== 'localhost';
 
       res.cookie('ng_token', token, {
         path: '/',
         httpOnly: true,
-        secure: isProduction,
+        secure: useSecure,
         sameSite: 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        domain: isProduction ? cookieDomain : undefined,
+        domain: cookieDomain,
       });
 
       res.json({ user });

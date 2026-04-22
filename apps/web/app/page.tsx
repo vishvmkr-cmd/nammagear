@@ -4,11 +4,26 @@ import Link from 'next/link';
 import { Nav } from '@/components/nav';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth';
+import { useListings } from '@/lib/api';
 import { Laptop, Smartphone, Headphones } from 'lucide-react';
 
 export default function HomePage() {
   const { data: authData } = useAuth();
   const isAdmin = authData?.user?.role === 'ADMIN';
+  
+  // Fetch listings for stats
+  const { data: laptopsData } = useListings({ category: 'laptops', limit: 100 });
+  const { data: mobilesData } = useListings({ category: 'mobiles', limit: 100 });
+  const { data: allData } = useListings({ limit: 1000 });
+  
+  const laptopsCount = laptopsData?.total || 0;
+  const mobilesCount = mobilesData?.total || 0;
+  const allListings = allData?.items || [];
+  const minPrice = allListings.length > 0 
+    ? Math.min(...allListings.map((l: { price: number }) => l.price))
+    : 8500;
+  const minPriceFormatted = new Intl.NumberFormat('en-IN').format(minPrice);
+  
   return (
     <>
       <Nav />
@@ -51,15 +66,15 @@ export default function HomePage() {
                 </h3>
                 <div className="ag-stat-row">
                   <span>Laptops in stock</span>
-                  <span>214</span>
+                  <span>{laptopsCount}</span>
                 </div>
                 <div className="ag-stat-row">
                   <span>Mobiles in stock</span>
-                  <span>98</span>
+                  <span>{mobilesCount}</span>
                 </div>
                 <div className="ag-stat-row">
                   <span>Starting from</span>
-                  <span className="ag-price">₹8,500 <span className="ag-stat-arrow" aria-hidden>↓</span></span>
+                  <span className="ag-price">₹{minPriceFormatted} <span className="ag-stat-arrow" aria-hidden>↓</span></span>
                 </div>
                 <div className="ag-stat-row">
                   <span>Avg delivery</span>

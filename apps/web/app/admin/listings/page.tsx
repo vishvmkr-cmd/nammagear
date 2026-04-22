@@ -2,41 +2,26 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useAdminListings, useAdminUpdateListing, useAdminDeleteListing } from '@/lib/admin';
+import { useAdminListings, useAdminDeleteListing } from '@/lib/admin';
 import { formatPrice, formatTimeAgo } from '@/lib/utils';
 import { AdminErrorBanner } from '@/components/admin-error-banner';
-import { Pencil, Trash2, Check, X, Plus } from 'lucide-react';
+import { Pencil, Trash2, Plus, LayoutGrid, List } from 'lucide-react';
 
 export default function AdminListingsPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editData, setEditData] = useState<{ price?: string; title?: string; status?: string }>({});
+  const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
 
   const { data, isLoading, isError, error, refetch } = useAdminListings({ status: statusFilter || undefined, page });
-  const updateListing = useAdminUpdateListing();
   const deleteListing = useAdminDeleteListing();
 
-  const startEdit = (listing: Record<string, unknown>) => {
-    setEditingId(listing.id as string);
-    setEditData({
-      price: String(listing.price),
-      title: listing.title as string,
-      status: listing.status as string,
-    });
-  };
-
-  const saveEdit = async () => {
-    if (!editingId) return;
-    const updates: Record<string, unknown> = { id: editingId };
-    if (editData.price) updates.price = parseInt(editData.price);
-    if (editData.title) updates.title = editData.title;
-    if (editData.status) updates.status = editData.status;
-    await updateListing.mutateAsync(updates as Parameters<typeof updateListing.mutateAsync>[0]);
-    setEditingId(null);
-  };
-
   const statuses = ['', 'ACTIVE', 'SOLD', 'REMOVED'];
+
+  const handleDelete = async (id: string, title: string) => {
+    if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
+      await deleteListing.mutateAsync(id);
+    }
+  };
 
   return (
     <div>
@@ -45,7 +30,7 @@ export default function AdminListingsPage() {
           <h1 className="font-serif text-[clamp(26px,3vw,36px)] font-normal tracking-[-0.025em] text-ink">
             Manage Listings
           </h1>
-          <p className="text-sm text-muted mt-1">Create on Sell, then edit or remove here</p>
+          <p className="text-sm text-muted mt-1">Browse, edit, or remove listings</p>
         </div>
         <Link
           href="/sell"
@@ -78,141 +63,213 @@ export default function AdminListingsPage() {
         <div className="text-muted py-12 text-center">Loading listings...</div>
       ) : (
         <>
-          <div className="bg-[var(--bg-elevated)] border-[0.5px] border-[var(--line)] rounded-2xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b-[0.5px] border-[var(--line)] bg-[var(--bg-muted)]">
-                    <th className="text-left py-3 px-4 font-mono text-[10px] tracking-[0.14em] uppercase text-muted font-medium">Item</th>
-                    <th className="text-left py-3 px-4 font-mono text-[10px] tracking-[0.14em] uppercase text-muted font-medium">Price</th>
-                    <th className="text-left py-3 px-4 font-mono text-[10px] tracking-[0.14em] uppercase text-muted font-medium">Status</th>
-                    <th className="text-left py-3 px-4 font-mono text-[10px] tracking-[0.14em] uppercase text-muted font-medium">Seller</th>
-                    <th className="text-left py-3 px-4 font-mono text-[10px] tracking-[0.14em] uppercase text-muted font-medium">Listed</th>
-                    <th className="text-right py-3 px-4 font-mono text-[10px] tracking-[0.14em] uppercase text-muted font-medium">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data?.items?.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="py-16 text-center text-muted text-sm">
-                        No listings match this filter.{' '}
-                        <Link href="/sell" className="text-forest-text font-medium underline-offset-2 hover:underline">
-                          Add one on Sell
-                        </Link>
-                        .
-                      </td>
+          <div className="flex items-center justify-between mb-6">
+            <div className="text-sm text-muted">
+              <span className="font-serif text-xl font-medium text-ink">{data?.total || 0}</span> total listings
+            </div>
+            
+            <div className="flex gap-1 border-[0.5px] border-[var(--line-strong)] rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('card')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-all ${
+                  viewMode === 'card'
+                    ? 'bg-ink text-bg'
+                    : 'text-muted hover:text-ink'
+                }`}
+                title="Card view"
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                Card
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-all ${
+                  viewMode === 'list'
+                    ? 'bg-ink text-bg'
+                    : 'text-muted hover:text-ink'
+                }`}
+                title="List view"
+              >
+                <List className="w-3.5 h-3.5" />
+                List
+              </button>
+            </div>
+          </div>
+
+          {data?.items?.length === 0 ? (
+            <div className="py-16 text-center text-muted bg-[var(--bg-elevated)] border-[0.5px] border-[var(--line)] rounded-2xl">
+              No listings match this filter.{' '}
+              <Link href="/sell" className="text-forest-text font-medium underline-offset-2 hover:underline">
+                Add one on Sell
+              </Link>
+              .
+            </div>
+          ) : viewMode === 'card' ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {data?.items?.map((listing: any) => (
+                <div
+                  key={listing.id}
+                  className="bg-[var(--bg-elevated)] border-[0.5px] border-[var(--line)] rounded-2xl overflow-hidden hover:shadow-lg transition-shadow"
+                >
+                  {/* Image */}
+                  <div className="aspect-[4/3] bg-gradient-to-br from-[var(--img-warm-1)] to-[var(--img-warm-2)] flex items-center justify-center relative">
+                    {listing.images?.[0] ? (
+                      <img 
+                        src={listing.images[0].url} 
+                        alt={listing.title} 
+                        className="w-full h-full object-cover" 
+                      />
+                    ) : (
+                      <svg width="60" height="60" viewBox="0 0 100 100" fill="none" className="opacity-30">
+                        <rect x="15" y="20" width="70" height="60" rx="4" fill="currentColor" />
+                      </svg>
+                    )}
+                    
+                    {/* Status Badge */}
+                    <div className="absolute top-2 left-2">
+                      <span className={`font-mono text-[9px] tracking-[0.12em] uppercase py-1 px-2 rounded-[4px] ${
+                        listing.status === 'ACTIVE' ? 'bg-forest-soft text-forest-text' :
+                        listing.status === 'SOLD' ? 'bg-saffron-soft text-saffron-text' :
+                        'bg-rose-soft text-rose'
+                      }`}>
+                        {listing.status}
+                      </span>
+                    </div>
+
+                    {/* Condition Badge */}
+                    <div className="absolute top-2 right-2">
+                      <span className="font-mono text-[9px] tracking-[0.12em] uppercase py-1 px-2 rounded-[4px] bg-black/60 text-white backdrop-blur-sm">
+                        Grade {listing.condition}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-4">
+                    <div className="mb-2">
+                      <h3 className="font-medium text-sm text-ink line-clamp-2 mb-1">
+                        {listing.title}
+                      </h3>
+                      <div className="text-xs text-muted">
+                        {listing.category?.name} · {listing.area}
+                      </div>
+                    </div>
+
+                    <div className="flex items-baseline gap-2 mb-3">
+                      <span className="font-serif text-lg font-medium text-ink">
+                        {formatPrice(listing.price)}
+                      </span>
+                      {listing.negotiable && (
+                        <span className="text-xs text-forest-text">negotiable</span>
+                      )}
+                    </div>
+
+                    <div className="text-xs text-muted mb-4">
+                      By {listing.user?.name} · {formatTimeAgo(listing.createdAt)}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/listing/${listing.id}/edit`}
+                        className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-forest-soft text-forest-text text-sm font-medium hover:bg-forest hover:text-white transition-colors no-underline"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                        Edit
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(listing.id, listing.title)}
+                        className="px-3 py-2 rounded-lg bg-rose-soft text-rose hover:bg-rose hover:text-white transition-colors"
+                        title="Delete listing"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            /* List View */
+            <div className="bg-[var(--bg-elevated)] border-[0.5px] border-[var(--line)] rounded-2xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b-[0.5px] border-[var(--line)] bg-[var(--bg-muted)]">
+                      <th className="text-left py-3 px-4 font-mono text-[10px] tracking-[0.14em] uppercase text-muted font-medium">Item</th>
+                      <th className="text-left py-3 px-4 font-mono text-[10px] tracking-[0.14em] uppercase text-muted font-medium">Price</th>
+                      <th className="text-left py-3 px-4 font-mono text-[10px] tracking-[0.14em] uppercase text-muted font-medium">Status</th>
+                      <th className="text-left py-3 px-4 font-mono text-[10px] tracking-[0.14em] uppercase text-muted font-medium">Seller</th>
+                      <th className="text-left py-3 px-4 font-mono text-[10px] tracking-[0.14em] uppercase text-muted font-medium">Listed</th>
+                      <th className="text-right py-3 px-4 font-mono text-[10px] tracking-[0.14em] uppercase text-muted font-medium">Actions</th>
                     </tr>
-                  ) : null}
-                  {data?.items?.map((listing: Record<string, unknown>) => (
-                    <tr key={listing.id as string} className="border-b-[0.5px] border-[var(--line)] last:border-0 hover:bg-[var(--bg-muted)] transition-colors">
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-3">
-                          {(listing.images as Array<Record<string, string>>)?.[0] && (
-                            <img
-                              src={(listing.images as Array<Record<string, string>>)[0].url}
-                              alt=""
-                              className="w-10 h-10 rounded-lg object-cover border-[0.5px] border-[var(--line)]"
-                            />
-                          )}
-                          <div>
-                            {editingId === listing.id ? (
-                              <input
-                                value={editData.title}
-                                onChange={(e) => setEditData({ ...editData, title: e.target.value })}
-                                className="px-2 py-1 text-sm border-[0.5px] border-[var(--line-strong)] rounded-lg bg-[var(--form-bg)] text-ink w-full"
+                  </thead>
+                  <tbody>
+                    {data?.items?.map((listing: any) => (
+                      <tr key={listing.id} className="border-b-[0.5px] border-[var(--line)] last:border-0 hover:bg-[var(--bg-muted)] transition-colors">
+                        <td className="py-3.5 px-4">
+                          <div className="flex items-center gap-3">
+                            {listing.images?.[0] && (
+                              <img
+                                src={listing.images[0].url}
+                                alt=""
+                                className="w-10 h-10 rounded-lg object-cover border-[0.5px] border-[var(--line)]"
                               />
-                            ) : (
-                              <div className="font-medium text-ink">{listing.title as string}</div>
                             )}
-                            <div className="text-[11px] text-muted">{(listing.category as Record<string, string>)?.name} · Grade {listing.condition as string}</div>
+                            <div>
+                              <div className="font-medium text-ink">{listing.title}</div>
+                              <div className="text-[11px] text-muted">{listing.category?.name} · Grade {listing.condition}</div>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="py-3.5 px-4">
-                        {editingId === listing.id ? (
-                          <input
-                            type="number"
-                            value={editData.price}
-                            onChange={(e) => setEditData({ ...editData, price: e.target.value })}
-                            className="px-2 py-1 text-sm border-[0.5px] border-[var(--line-strong)] rounded-lg bg-[var(--form-bg)] text-ink w-24"
-                          />
-                        ) : (
+                        </td>
+                        <td className="py-3.5 px-4">
                           <span className="font-serif font-medium text-ink">
-                            {formatPrice(listing.price as number)}
+                            {formatPrice(listing.price)}
                           </span>
-                        )}
-                      </td>
-                      <td className="py-3.5 px-4">
-                        {editingId === listing.id ? (
-                          <select
-                            value={editData.status}
-                            onChange={(e) => setEditData({ ...editData, status: e.target.value })}
-                            className="px-2 py-1 text-xs border-[0.5px] border-[var(--line-strong)] rounded-lg bg-[var(--form-bg)] text-ink"
-                          >
-                            <option value="ACTIVE">Active</option>
-                            <option value="SOLD">Sold</option>
-                            <option value="REMOVED">Removed</option>
-                          </select>
-                        ) : (
+                        </td>
+                        <td className="py-3.5 px-4">
                           <span className={`font-mono text-[10px] tracking-[0.12em] uppercase py-1 px-2 rounded-[3px] ${
                             listing.status === 'ACTIVE' ? 'bg-forest-soft text-forest-text' :
                             listing.status === 'SOLD' ? 'bg-saffron-soft text-saffron-text' :
                             'bg-rose-soft text-rose'
                           }`}>
-                            {listing.status as string}
+                            {listing.status}
                           </span>
-                        )}
-                      </td>
-                      <td className="py-3.5 px-4 text-muted text-[12px]">
-                        {(listing.user as Record<string, string>)?.name}
-                      </td>
-                      <td className="py-3.5 px-4 text-muted text-[12px]">
-                        {formatTimeAgo(listing.createdAt as string)}
-                      </td>
-                      <td className="py-3.5 px-4 text-right">
-                        {editingId === listing.id ? (
+                        </td>
+                        <td className="py-3.5 px-4 text-muted text-[12px]">
+                          {listing.user?.name}
+                        </td>
+                        <td className="py-3.5 px-4 text-muted text-[12px]">
+                          {formatTimeAgo(listing.createdAt)}
+                        </td>
+                        <td className="py-3.5 px-4 text-right">
                           <div className="flex gap-1.5 justify-end">
-                            <button
-                              onClick={saveEdit}
-                              className="w-8 h-8 rounded-lg bg-forest-soft text-forest-text flex items-center justify-center hover:bg-forest hover:text-white transition-colors"
-                            >
-                              <Check className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => setEditingId(null)}
-                              className="w-8 h-8 rounded-lg bg-[var(--bg-muted)] text-muted flex items-center justify-center hover:text-ink transition-colors"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="flex gap-1.5 justify-end">
-                            <button
-                              onClick={() => startEdit(listing)}
-                              className="w-8 h-8 rounded-lg bg-[var(--bg-muted)] text-muted flex items-center justify-center hover:text-forest transition-colors"
+                            <Link
+                              href={`/listing/${listing.id}/edit`}
+                              className="w-8 h-8 rounded-lg bg-[var(--bg-muted)] text-muted flex items-center justify-center hover:text-forest transition-colors no-underline"
                               title="Edit listing"
                             >
                               <Pencil className="w-3.5 h-3.5" />
-                            </button>
+                            </Link>
                             <button
-                              onClick={() => deleteListing.mutate(listing.id as string)}
+                              onClick={() => handleDelete(listing.id, listing.title)}
                               className="w-8 h-8 rounded-lg bg-[var(--bg-muted)] text-muted flex items-center justify-center hover:text-rose transition-colors"
                               title="Remove listing"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          )}
 
           {data && data.totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-6">
+            <div className="flex justify-center gap-2 mt-8">
               {Array.from({ length: data.totalPages }, (_, i) => (
                 <button
                   key={i}

@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Nav } from '@/components/nav';
 import { Button } from '@/components/ui/button';
-import { useCreateListing, useUploadImages, useCategories } from '@/lib/api';
+import { useListing, useUpdateListing, useUploadImages, useCategories } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { Upload, X, Check } from 'lucide-react';
+import { Upload, X, Check, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 const BANGALORE_PINCODES: Record<string, string> = {
   '560001': 'Bangalore GPO',
@@ -60,13 +61,20 @@ const BANGALORE_PINCODES: Record<string, string> = {
   '560103': 'Jala Hobli',
 };
 
-export default function SellPage() {
+export default function EditListingPage() {
+  const params = useParams();
   const router = useRouter();
+  const listingId = params?.id as string;
   const { data: authData, isLoading: authLoading } = useAuth();
-  const { data: catData, isLoading: catsLoading } = useCategories();
+  const { data: listing, isLoading: listingLoading } = useListing(listingId);
+  const { data: catData } = useCategories();
   const categories = catData?.categories || [];
+  const updateListing = useUpdateListing(listingId);
+  const uploadImages = useUploadImages();
+
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -86,30 +94,63 @@ export default function SellPage() {
     warrantyFrom: '',
     warrantyPeriod: '',
     warrantyDetails: '',
+    status: 'ACTIVE' as 'ACTIVE' | 'SOLD' | 'REMOVED',
   });
   const [pincodeInfo, setPincodeInfo] = useState<string>('');
   const [error, setError] = useState('');
 
-  const uploadImages = useUploadImages();
-  const createListing = useCreateListing();
-
   useEffect(() => {
-    if (authLoading) return;
+    if (authLoading || listingLoading) return;
     if (!authData?.user) {
-      router.replace('/auth/signin?redirect=/sell');
+      router.replace('/auth/signin?redirect=/my-listings');
       return;
     }
-    if (authData.user.role !== 'ADMIN') {
-      router.replace('/browse');
-    }
-  }, [authLoading, authData, router]);
+    if (!listing) return;
 
-  if (authLoading || !authData?.user || authData.user.role !== 'ADMIN') {
+    const isOwner = listing.user.id === authData.user.id;
+    const isAdmin = authData.user.role === 'ADMIN';
+    if (!isOwner && !isAdmin) {
+      router.replace('/my-listings');
+      return;
+    }
+
+    setFormData({
+      title: listing.title,
+      description: listing.description,
+      categoryId: listing.category.id,
+      condition: listing.condition,
+      price: String(listing.price),
+      negotiable: listing.negotiable,
+      pincode: listing.pincode,
+      ageYears: listing.ageYears ? String(listing.ageYears) : '',
+      hasBill: listing.hasBill,
+      processor: listing.processor || '',
+      memory: listing.memory || '',
+      storage: listing.storage || '',
+      display: listing.display || '',
+      graphics: listing.graphics || '',
+      warrantyType: listing.warrantyType || '',
+      warrantyFrom: listing.warrantyFrom || '',
+      warrantyPeriod: listing.warrantyPeriod || '',
+      warrantyDetails: listing.warrantyDetails || '',
+      status: listing.status,
+    });
+
+    if (listing.images && listing.images.length > 0) {
+      setExistingImages(listing.images.map((img: any) => img.url));
+    }
+
+    if (listing.pincode && BANGALORE_PINCODES[listing.pincode]) {
+      setPincodeInfo(`${BANGALORE_PINCODES[listing.pincode]} · Bangalore verified`);
+    }
+  }, [authLoading, listingLoading, authData, listing, router]);
+
+  if (authLoading || listingLoading || !authData?.user || !listing) {
     return (
       <>
         <Nav />
         <main className="flex-1 min-h-[50vh] flex items-center justify-center px-4 text-[var(--muted)]">
-          {authLoading ? 'Loading…' : 'Checking access…'}
+          Loading...
         </main>
       </>
     );
@@ -117,7 +158,9 @@ export default function SellPage() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (images.length + files.length > 5) {
+    const totalImages = existingImages.length + images.length + files.length;
+    
+    if (totalImages > 5) {
       setError('Maximum 5 images allowed');
       return;
     }
@@ -129,11 +172,16 @@ export default function SellPage() {
     setImagePreviews([...imagePreviews, ...newPreviews]);
   };
 
-  const removeImage = (index: number) => {
+  const removeNewImage = (index: number) => {
     const newImages = images.filter((_, i) => i !== index);
     const newPreviews = imagePreviews.filter((_, i) => i !== index);
     setImages(newImages);
     setImagePreviews(newPreviews);
+  };
+
+  const removeExistingImage = (index: number) => {
+    const newExisting = existingImages.filter((_, i) => i !== index);
+    setExistingImages(newExisting);
   };
 
   const handlePincodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -161,23 +209,41 @@ export default function SellPage() {
     }
 
     try {
-      let imageUrls: string[] = [];
+      let newImageUrls: string[] = [];
       
       if (images.length > 0) {
         const uploadResult = await uploadImages.mutateAsync(images);
-        imageUrls = uploadResult.urls;
+        newImageUrls = uploadResult.urls;
       }
 
-      await createListing.mutateAsync({
-        ...formData,
+      const allImageUrls = [...existingImages, ...newImageUrls];
+
+      await updateListing.mutateAsync({
+        title: formData.title,
+        description: formData.description,
         price: parseInt(formData.price),
+        negotiable: formData.negotiable,
+        condition: formData.condition,
+        status: formData.status,
+        categoryId: formData.categoryId,
         ageYears: formData.ageYears ? parseFloat(formData.ageYears) : undefined,
-        imageUrls,
+        hasBill: formData.hasBill,
+        pincode: formData.pincode,
+        processor: formData.processor || undefined,
+        memory: formData.memory || undefined,
+        storage: formData.storage || undefined,
+        display: formData.display || undefined,
+        graphics: formData.graphics || undefined,
+        warrantyType: formData.warrantyType || undefined,
+        warrantyFrom: formData.warrantyFrom || undefined,
+        warrantyPeriod: formData.warrantyPeriod || undefined,
+        warrantyDetails: formData.warrantyDetails || undefined,
+        imageUrls: allImageUrls.length > 0 ? allImageUrls : undefined,
       });
 
-      router.push('/my-listings');
+      router.push(`/listing/${listingId}`);
     } catch (err: any) {
-      setError(err.message || 'Failed to create listing');
+      setError(err.message || 'Failed to update listing');
     }
   };
 
@@ -186,13 +252,18 @@ export default function SellPage() {
       <Nav />
       <main className="flex-1 min-h-screen py-8">
         <div className="max-w-[600px] mx-auto px-8">
+          <Link href={`/listing/${listingId}`} className="inline-flex items-center gap-2 text-sm text-muted hover:text-forest mb-4">
+            <ArrowLeft className="w-4 h-4" />
+            Back to listing
+          </Link>
+
           <div className="bg-[var(--bg-elevated)] border border-[var(--line)] rounded-2xl overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
             <form onSubmit={handleSubmit} className="p-8 sm:p-10">
               <h1 className="font-serif text-[clamp(26px,3.2vw,36px)] font-normal tracking-[-0.025em] leading-[1.1] mb-2.5 text-ink">
-                List your item
+                Edit your listing
               </h1>
               <p className="text-sm text-muted mb-8">
-                Free to list · buyers reach you on WhatsApp directly.
+                Update any details of your listing below.
               </p>
 
               {error && (
@@ -206,19 +277,31 @@ export default function SellPage() {
                   Photos · up to 5
                 </label>
                 <div className="grid grid-cols-5 gap-2 mb-2">
-                  {imagePreviews.map((preview, idx) => (
-                    <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-[var(--line)]">
-                      <img src={preview} alt={`Preview ${idx + 1}`} className="w-full h-full object-cover" />
+                  {existingImages.map((url, idx) => (
+                    <div key={`existing-${idx}`} className="relative aspect-square rounded-lg overflow-hidden border border-[var(--line)]">
+                      <img src={url} alt={`Existing ${idx + 1}`} className="w-full h-full object-cover" />
                       <button
                         type="button"
-                        onClick={() => removeImage(idx)}
+                        onClick={() => removeExistingImage(idx)}
                         className="absolute top-1 right-1 w-5 h-5 rounded-full bg-rose text-white flex items-center justify-center text-xs hover:bg-rose/90"
                       >
                         <X className="w-3 h-3" />
                       </button>
                     </div>
                   ))}
-                  {images.length < 5 && (
+                  {imagePreviews.map((preview, idx) => (
+                    <div key={`new-${idx}`} className="relative aspect-square rounded-lg overflow-hidden border border-[var(--line)]">
+                      <img src={preview} alt={`New ${idx + 1}`} className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => removeNewImage(idx)}
+                        className="absolute top-1 right-1 w-5 h-5 rounded-full bg-rose text-white flex items-center justify-center text-xs hover:bg-rose/90"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                  {(existingImages.length + images.length) < 5 && (
                     <label className="aspect-square rounded-lg border-[1px] border-dashed border-[var(--line-strong)] flex items-center justify-center cursor-pointer hover:border-forest transition-colors">
                       <input
                         type="file"
@@ -495,6 +578,21 @@ export default function SellPage() {
                 </div>
               </div>
 
+              <div className="mb-5.5">
+                <label className="font-mono text-[10px] tracking-[0.14em] uppercase text-muted block mb-2 font-medium">
+                  Status
+                </label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                  className="w-full px-[15px] py-3 border-[0.5px] border-[var(--line-strong)] rounded-[10px] font-sans text-sm bg-[var(--form-bg)] text-ink outline-none transition-colors focus:border-forest focus:bg-[var(--bg-elevated)]"
+                >
+                  <option value="ACTIVE">Active</option>
+                  <option value="SOLD">Sold</option>
+                  <option value="REMOVED">Removed</option>
+                </select>
+              </div>
+
               <div className="mb-6">
                 <label className="flex items-center gap-2.5 cursor-pointer">
                   <input
@@ -512,13 +610,13 @@ export default function SellPage() {
                 variant="forest"
                 size="xl"
                 className="w-full justify-center"
-                disabled={uploadImages.isPending || createListing.isPending}
+                disabled={uploadImages.isPending || updateListing.isPending}
               >
-                {uploadImages.isPending || createListing.isPending ? 'Posting...' : 'Post listing →'}
+                {uploadImages.isPending || updateListing.isPending ? 'Updating...' : 'Update listing →'}
               </Button>
 
               <p className="text-xs text-muted text-center mt-4">
-                By listing you agree to community rules · no stolen goods, no commercial sellers.
+                Changes will be reflected immediately after saving.
               </p>
             </form>
           </div>
