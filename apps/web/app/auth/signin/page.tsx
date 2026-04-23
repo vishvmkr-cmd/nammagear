@@ -1,11 +1,24 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Nav } from '@/components/nav';
 import { useLogin } from '@/lib/auth';
+import { GoogleSignInButton } from '@/components/google-sign-in-button';
 import { Eye, EyeOff, Shield, Truck, Wrench } from 'lucide-react';
+
+function validateEmail(email: string): string | null {
+  if (!email.trim()) return 'Email is required';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'Please enter a valid email address';
+  return null;
+}
+
+function validatePassword(password: string): string | null {
+  if (!password) return 'Password is required';
+  if (password.length < 8) return 'Password must be at least 8 characters';
+  return null;
+}
 
 function SignInForm() {
   const router = useRouter();
@@ -15,21 +28,72 @@ function SignInForm() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
+  const [touched, setTouched] = useState<{ email?: boolean; password?: boolean }>({});
   const login = useLogin();
+
+  useEffect(() => {
+    const code = searchParams?.get('error');
+    if (!code) return;
+    const messages: Record<string, string> = {
+      google_denied: 'Google sign-in was cancelled.',
+      google_failed: 'Google sign-in failed. Please try again.',
+      google_not_configured:
+        'Google sign-in is not configured. Set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and GOOGLE_REDIRECT_URI on the API.',
+      google_invalid_state: 'Sign-in expired or invalid. Please try again.',
+      google_email_unverified:
+        'Your Google account email must be verified before you can sign in.',
+    };
+    setError(messages[code] || 'Sign-in failed.');
+  }, [searchParams]);
+
+  const handleBlur = (field: 'email' | 'password') => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    if (field === 'email') {
+      const err = validateEmail(formData.email);
+      setFieldErrors(prev => ({ ...prev, email: err || undefined }));
+    }
+    if (field === 'password') {
+      const err = validatePassword(formData.password);
+      setFieldErrors(prev => ({ ...prev, password: err || undefined }));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const emailErr = validateEmail(formData.email);
+    const passwordErr = validatePassword(formData.password);
+
+    if (emailErr || passwordErr) {
+      setFieldErrors({ email: emailErr || undefined, password: passwordErr || undefined });
+      setTouched({ email: true, password: true });
+      return;
+    }
+
+    setFieldErrors({});
+
     try {
       await login.mutateAsync(formData);
       router.push(redirect);
     } catch (err: any) {
-      setError(err.message || 'Login failed');
+      const msg = err.message || 'Login failed';
+      if (msg.toLowerCase().includes('email') || msg.toLowerCase().includes('not found')) {
+        setFieldErrors({ email: 'No account found with this email' });
+      } else if (msg.toLowerCase().includes('password') || msg.toLowerCase().includes('invalid')) {
+        setError('Invalid email or password. Please check your credentials.');
+      } else {
+        setError(msg);
+      }
     }
   };
 
-  const inputClass = 'w-full px-4 py-3.5 rounded-xl text-[15px] bg-[var(--bg-elevated)] text-[var(--ink)] border border-[var(--line-strong)] outline-none transition-all focus:border-[var(--forest)] focus:ring-2 focus:ring-[var(--forest)]/10 placeholder:text-[var(--muted-2)]';
+  const inputClass = 'w-full px-4 py-3.5 rounded-xl text-[15px] bg-[var(--bg-elevated)] text-[var(--ink)] border outline-none transition-all focus:ring-2 focus:ring-[var(--forest)]/10 placeholder:text-[var(--muted-2)]';
+  const inputDefault = `${inputClass} border-[var(--line-strong)] focus:border-[var(--forest)]`;
+  const inputError = `${inputClass} border-[var(--rose)] focus:border-[var(--rose)]`;
   const labelClass = 'block text-[12px] font-semibold tracking-[0.08em] uppercase text-[var(--ink-soft)] mb-2';
+  const fieldErrClass = 'text-[12px] text-[var(--rose)] mt-1.5 font-medium';
 
   return (
     <div className="w-full max-w-[480px]">
@@ -60,18 +124,27 @@ function SignInForm() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
             <div>
               <label className={labelClass}>Email address</label>
               <input
                 type="email"
-                required
                 autoFocus
                 value={formData.email}
-                onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, email: e.target.value }));
+                  if (touched.email) {
+                    const err = validateEmail(e.target.value);
+                    setFieldErrors(prev => ({ ...prev, email: err || undefined }));
+                  }
+                }}
+                onBlur={() => handleBlur('email')}
                 placeholder="you@example.com"
-                className={inputClass}
+                className={touched.email && fieldErrors.email ? inputError : inputDefault}
               />
+              {touched.email && fieldErrors.email && (
+                <p className={fieldErrClass}>{fieldErrors.email}</p>
+              )}
             </div>
 
             <div>
@@ -79,11 +152,17 @@ function SignInForm() {
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  required
                   value={formData.password}
-                  onChange={e => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                  onChange={e => {
+                    setFormData(prev => ({ ...prev, password: e.target.value }));
+                    if (touched.password) {
+                      const err = validatePassword(e.target.value);
+                      setFieldErrors(prev => ({ ...prev, password: err || undefined }));
+                    }
+                  }}
+                  onBlur={() => handleBlur('password')}
                   placeholder="Enter your password"
-                  className={`${inputClass} pr-12`}
+                  className={`${touched.password && fieldErrors.password ? inputError : inputDefault} pr-12`}
                 />
                 <button
                   type="button"
@@ -93,6 +172,9 @@ function SignInForm() {
                   {showPassword ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
                 </button>
               </div>
+              {touched.password && fieldErrors.password && (
+                <p className={fieldErrClass}>{fieldErrors.password}</p>
+              )}
             </div>
 
             <button
@@ -111,14 +193,7 @@ function SignInForm() {
             <div className="flex-1 h-px bg-[var(--line)]" />
           </div>
 
-          {/* Google */}
-          <button
-            type="button"
-            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl text-[14px] font-medium border border-[var(--line-strong)] bg-[var(--bg)] text-[var(--ink)] transition-all hover:border-[var(--ink)] hover:bg-[var(--bg-muted)]"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.97 10.97 0 0 0 1 12c0 1.77.42 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-            Continue with Google
-          </button>
+          <GoogleSignInButton nextPath={redirect} />
 
           {/* Links */}
           <div className="mt-6 text-center space-y-2.5">

@@ -8,8 +8,19 @@ export function validate(schema: ZodSchema) {
       next();
     } catch (error) {
       if (error instanceof ZodError) {
+        const fieldErrors: Record<string, string> = {};
+        for (const issue of error.issues) {
+          const field = issue.path.join('.');
+          if (!fieldErrors[field]) {
+            fieldErrors[field] = issue.message;
+          }
+        }
+
+        const firstMessage = error.issues[0]?.message || 'Validation failed';
+
         return res.status(400).json({
-          error: 'Validation failed',
+          error: firstMessage,
+          fieldErrors,
           details: error.issues,
         });
       }

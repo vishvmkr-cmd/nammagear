@@ -3,6 +3,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { API_URL } from './api-url';
 
+/** Starts Google OAuth (same-origin `/api` proxy in dev). `nextPath` must be a relative path (e.g. `/browse`). */
+export function googleAuthStartUrl(nextPath: string): string {
+  const next = nextPath.startsWith('/') ? nextPath : '/';
+  return `${API_URL}/auth/google?next=${encodeURIComponent(next)}`;
+}
+
 async function readAuthError(res: Response): Promise<string> {
   const raw = await res.text();
   let body: Record<string, unknown> | null = null;

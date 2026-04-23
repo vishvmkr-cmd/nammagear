@@ -81,6 +81,10 @@ export async function login(data: LoginData) {
     throw new Error('Invalid email or password');
   }
 
+  if (!user.passwordHash) {
+    throw new Error('This account uses Google sign-in. Use Continue with Google.');
+  }
+
   const isValid = await verifyPassword(data.password, user.passwordHash);
 
   if (!isValid) {
@@ -89,9 +93,89 @@ export async function login(data: LoginData) {
 
   const token = signToken({ userId: user.id, email: user.email, role: user.role });
 
-  const { passwordHash, ...userWithoutPassword } = user;
+  const { passwordHash: _ph, ...userWithoutPassword } = user;
 
   return { user: userWithoutPassword, token };
+}
+
+const DEFAULT_OAUTH_PINCODE = '560001';
+
+export async function loginOrSignupWithGoogle(profile: {
+  googleId: string;
+  email: string;
+  name: string;
+  picture?: string;
+}) {
+  const email = profile.email.trim().toLowerCase();
+  const name =
+    profile.name.trim().slice(0, 50) ||
+    email.split('@')[0] ||
+    'User';
+
+  const byGoogle = await prisma.user.findUnique({
+    where: { googleId: profile.googleId },
+  });
+
+  if (byGoogle) {
+    const token = signToken({
+      userId: byGoogle.id,
+      email: byGoogle.email,
+      role: byGoogle.role,
+    });
+    const { passwordHash: _p, ...user } = byGoogle;
+    return { user, token };
+  }
+
+  const byEmail = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (byEmail) {
+    if (byEmail.googleId && byEmail.googleId !== profile.googleId) {
+      throw new Error('This email is linked to a different Google account');
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: byEmail.id },
+      data: {
+        googleId: profile.googleId,
+        ...(profile.picture && !byEmail.avatarUrl
+          ? { avatarUrl: profile.picture }
+          : {}),
+      },
+    });
+
+    const token = signToken({
+      userId: updated.id,
+      email: updated.email,
+      role: updated.role,
+    });
+    const { passwordHash: _p, ...user } = updated;
+    return { user, token };
+  }
+
+  const area =
+    PINCODE_TO_AREA[DEFAULT_OAUTH_PINCODE] || 'Bangalore';
+
+  const user = await prisma.user.create({
+    data: {
+      email,
+      name,
+      googleId: profile.googleId,
+      passwordHash: null,
+      pincode: DEFAULT_OAUTH_PINCODE,
+      area,
+      avatarUrl: profile.picture || undefined,
+    },
+  });
+
+  const token = signToken({
+    userId: user.id,
+    email: user.email,
+    role: user.role,
+  });
+  const { passwordHash: _p, ...safe } = user;
+  return { user: safe, token };
 }
 
 export async function getUserById(userId: string) {
